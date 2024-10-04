@@ -1,0 +1,650 @@
+{
+  "data": [
+    {
+      "title": "Fire and forget for long running tasks are now supported??",
+      "url": "https://github.com/vercel/next.js/discussions/62705",
+      "bodyText": "Summary\nHi! I am using Next.js 13.5.2 with the page router and its API routes as my backend.\nI have the following flow consisting of three endpoints A, B and C. B and C are endpoints dedicated to long-running tasks.\nA is called from the client, then A calls B but does not wait for the response (the UI does not care about the immediate response), finally A returns a status 200 to the client.\nB calls C also without waiting for a response. This flow only worked sometimes (most of the time it failed), I assumed it was because fire and forget calls were not supported. It is worth mentioning that both calls to B and C have a catch block, and this is what I get in Sentry.\nFor endpoint B:\nconnect ETIMEDOUT 76.76.21.22.22:443\nFor endpoint C:\nwrite EPROTO C00F7099E07F0000:error:0A00010B:SSL routines:ssl3_get_record:wrong version number:ssl/record/ssl3_record.c:355:\nBut since two days ago I think, this flow is always working.\nWhat I want to know is.\n\nwas my original assumption correct?\nhas something changed, why does it work now?\n\nPlease! someone can give me some clarity? this is making me crazy haha\nAdditional information\nNo response\nExample\nNo response",
+      "number": 62705,
+      "author": "nv-cho",
+      "category": "Help",
+      "comments": [
+        {
+          "id": "DC_kwDOBC3Cis4Ag9LP",
+          "bodyText": "Hi,\nAssuming you had deployed to Vercel, the problem with endpoint B might just be that, the serverless task A, was terminated, and so the B endpoint kills the connection. Not sure about C, that sounds more like TLS configuration.",
+          "author": {
+            "login": "icyJoseph"
+          },
+          "replies": {
+            "nodes": [
+              {
+                "bodyText": "yes, it's deployed on Vercel",
+                "author": {
+                  "login": "nv-cho"
+                }
+              }
+            ],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4ApWkC",
+          "bodyText": "Update for anyone coming from google:\n\nhttps://vercel.com/changelog/waituntil-is-now-available-for-vercel-functions\n\nnpm i @vercel/functions\nimport { waitUntil } from \"@vercel/functions\";\n\n// within the api handler\n// will continue running even after the response as been returned\nwaitUntil(new Promise(resolve => setTimeout(() => {\n  console.log(\"hello world\"), 500)\n}));\n\n// immediately return your response\nreturn response\n@nv-cho please mark this as the new accepted answer so everyone can see it.",
+          "author": {
+            "login": "AlbertMarashi"
+          },
+          "replies": {
+            "nodes": [
+              {
+                "bodyText": "thanks!",
+                "author": {
+                  "login": "nv-cho"
+                }
+              }
+            ],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "`outputStandalone` with custom server.js",
+      "url": "https://github.com/vercel/next.js/discussions/34599",
+      "bodyText": "How to setup experimental outputStandalone with custom server.js? It appears, the server.js included in the build is what comes from nextjs and not mine.",
+      "number": 34599,
+      "author": "blackmann",
+      "category": "Help",
+      "comments": [
+        {
+          "id": "DC_kwDOBC3Cis4AId_S",
+          "bodyText": "Hello.\nWhat is the server.js you are talking about?\noutputStandalone has to be inside next.config.js",
+          "author": {
+            "login": "thibautsabot"
+          },
+          "replies": {
+            "nodes": [
+              {
+                "bodyText": "I’m talking about this: https://nextjs.org/docs/advanced-features/custom-server\nIf you happen to implement a custom server, output standalone doesn’t use your custom server. Or say, there’s no guide on how to use a custom server with standalone",
+                "author": {
+                  "login": "blackmann"
+                }
+              }
+            ],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4AIeRf",
+          "bodyText": "I was about to open same topic. I am using custom server similar to official example, will outputStandalone work with this server?\nhttps://github.com/vercel/next.js/tree/canary/examples/custom-server-typescript",
+          "author": {
+            "login": "nemanjam"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4AMuE5",
+          "bodyText": "@blackmann did you ever figure this out? I'm guessing you may have to just copy your server into the standalone directory manually?",
+          "author": {
+            "login": "richardscarrott"
+          },
+          "replies": {
+            "nodes": [
+              {
+                "bodyText": "Yeah, pretty much.\nI need custom server just in production, so I develop without it, once build is done, I manually copy bundled custom server (using esbuild so it's single file with all dependencies inside).",
+                "author": {
+                  "login": "sladg"
+                }
+              },
+              {
+                "bodyText": "@sladg do you have a min example repo on how you did that? I tried esbuild to bundle all dependencies, but when starting the server with node .next/standalone/custom-server.js, it just exits without any error. I'm kinda stuck at this point now.",
+                "author": {
+                  "login": "PsyGik"
+                }
+              },
+              {
+                "bodyText": "Feel free to check https://www.npmjs.com/package/@sladg/nextjs-lambda there is a scripts/pack-nextjs.sh that should give you more insight",
+                "author": {
+                  "login": "sladg"
+                }
+              },
+              {
+                "bodyText": "Just doing this doesn't work for me. I get an error saying Couldn't find a \"pages\" directory. Please create one under the project root.\nThen when I copy pages directory to standalone directory, I run into other issues because something from my next.config.js isn't present in the standalone output. It's regarding some webpack stuff for custom webpack overrides.\nI guess in all of this my issue is that I'm deploying a standalone Next.js output to Azure App Service and new server.js file doesn't work the same as my custom server.js file before it. What also complicates this potentially is that it's deployed to Windows (with IIS) instead of Linux and unfortunately that's probably part of the issue. On Linux, I would probably be able to use default server.js that Next.js creates in standalone build, but here that server.js works differently and it cannot be used just like previous express based server.js.",
+                "author": {
+                  "login": "marko-hologram"
+                }
+              }
+            ],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4AWGAk",
+          "bodyText": "I tried to do this, but my problem was that the output file tracer throws out a lot of files from standalone/node_modules/next, including dist/server/next.js, but without this file it's very difficult to set up a custom server.",
+          "author": {
+            "login": "andormade"
+          },
+          "replies": {
+            "nodes": [
+              {
+                "bodyText": "Did you try to install (full) next.js dependency after output file tracing?",
+                "author": {
+                  "login": "GoldenTK"
+                }
+              },
+              {
+                "bodyText": "This is not relevant anymore with the latest version.",
+                "author": {
+                  "login": "andormade"
+                }
+              },
+              {
+                "bodyText": "What’s the difference in latest version?",
+                "author": {
+                  "login": "GoldenTK"
+                }
+              }
+            ],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4AcsHf",
+          "bodyText": "Perhaps one option is to set up a script or run a set of commands to insert and replace the contents of a ready-made server.js file into the server.js file that gets built in the standalone directory.\n#!/bin/bash\n\n# Specify the source and destination file paths\nsource_file_path=\"./source_file.js\"\ndestination_file_path=\"./destination_file.js\"\n\n# Read the contents of the source file\nsource_file_contents=$(cat \"$source_file_path\")\n\n# Replace the contents of the destination file with the source file contents\necho \"$source_file_contents\" > \"$destination_file_path\"\n\nI'm going to try something similar, but using sed in order to append a few extra lines to the built server.js file. I reckon I'll run this on every deployment as part of the dockerfile (the plan is to dockerize our app).",
+          "author": {
+            "login": "Firgrep"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4Aektl",
+          "bodyText": "I also encountered the same problem, is there any solution?\nhttps://nextjs.org/docs/pages/building-your-application/configuring/custom-server",
+          "author": {
+            "login": "zjy365"
+          },
+          "replies": {
+            "nodes": [
+              {
+                "bodyText": "You mean like I described in this very discussion? ;)\n#34599 (comment)",
+                "author": {
+                  "login": "JohannesKuehnel"
+                }
+              },
+              {
+                "bodyText": "Thank you very much. After searching and practicing, I know that your method is correct, but I think you are missing a way. If the customized content is relatively simple, it can be achieved directly by overriding server.js. I refer to https://www.bekk.christmas/post/2022/13/how-to-create-a-simple-custom-server-in-next-js",
+                "author": {
+                  "login": "zjy365"
+                }
+              }
+            ],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4AgEQ2",
+          "bodyText": "To get a custom server running with output: standalone, extra dependencies and Docker I came to the following conclusion:\n\nCreate your custom server.js like described in the docs\nMake sure your next.config.js has output: 'standalone'\nCreate your Dockerfile like in the example\nAdd lines to copy your server.js file (after copying the standalone output)\nAdd a line to copy node_modules/next\nAdd lines to copy any other required dependencies or files (like ejs and templates in my case)\nBuild\n\nAlternatively, you could bundle your server file (like @sadg mentioned).\nSo the Dockerfile would contain something like this:\n...\n\n# Automatically leverage output traces to reduce image size\n# https://nextjs.org/docs/advanced-features/output-file-tracing\nCOPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./\nCOPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static\n\n# Custom server\nCOPY --from=builder --chown=nextjs:nodejs /app/dist/server.js ./server.js\nCOPY --from=builder --chown=nextjs:nodejs /app/node_modules/next ./node_modules/next\nCOPY --from=builder --chown=nextjs:nodejs /app/node_modules/ejs ./node_modules/ejs\nCOPY --from=builder --chown=nextjs:nodejs /app/src/views ./src/views\n\nUSER nextjs\n\nEXPOSE 3000\n\nENV PORT 3000\n# set hostname to localhost\nENV HOSTNAME \"0.0.0.0\"\n\nCMD [\"node\", \"server.js\"]",
+          "author": {
+            "login": "JohannesKuehnel"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4ApUv1",
+          "bodyText": "I am in the same situation with a custom server using depedencies\nMy server.js looks like this\nconst { createServer } = require('http')\nconst { parse } = require('url')\nconst next = require('next')\nconst { getServerUrl } = require('./utils/get-server-url')\nconst { logger } = require('./utils/logger')\nconst { connectAzureBus, injectKeyVaultValues, connectAppInsights } = require('./helpers/azure')\nconst { startRevalidation } = require('./app/api/webhook/revalidate/start')\n\nswitch (process.env.npm_lifecycle_event) {\n  case 'start':\n    process.env.NODE_ENV = 'production'\n    break\n  case 'dev':\n    process.env.NODE_ENV = 'development'\n    break\n  default:\n    logger.error(`${process.env.npm_lifecycle_event} does not exist`)\n}\n\nconst { hostname, port, dev } = getServerUrl()\n\nif (!dev) {\n  const { config } = require('./.next/required-server-files.json')\n  process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(config)\n}\n\nconst app = next({ dev, hostname, port })\nconst handle = app.getRequestHandler()\napp\n  .prepare()\n  .then(async () => {\n    await injectKeyVaultValues()\n  })\n  .then(() => {\n    createServer(async (req, res) => {\n      const parsedUrl = parse(req.url, true)\n      handle(req, res, parsedUrl)\n    }).listen(port, (err) => {\n      if (err) throw err\n      logger.info(`APP_START ${process.env.NEXT_PUBLIC_APP_URL}`)\n      if (!dev) {\n        connectAppInsights()\n        connectAzureBus().catch((error) => {\n          logger.error(error)\n          process.exit(1)\n        })\n        if (process.env.npm_config_clear) {\n          startRevalidation()\n        }\n      }\n    })\n  })\nFirst I noticed my ./utils, ./helpers and another file were not exporter inside the standalone folder once built so I decided to include it by using experimental.outputFileTracingIncludes\nmodule.exports = ({\n  output: 'standalone',\n  experimental: {\n    outputFileTracingIncludes:  {\n      '/': [\n        './utils/**/*',\n        './helpers/**/*',\n        './app/api/webhook/revalidate/start.js'\n      ]},\n  },\nThis is working but since I am using some package for azure such as application-insight, azure-bus and identity, this package are not include inside standalone node_modules so I had to move these with my dockerfile command\nexample :\n....\n  COPY --from=builder /app/node_modules/winston ./node_modules/winston\n  COPY --from=builder /app/node_modules/@colors/colors ./node_modules/@colors/colors\n  COPY --from=builder /app/node_modules/@dabh/diagnostics ./node_modules/@dabh/diagnostics\n  COPY --from=builder /app/node_modules/async ./node_modules/async\n  COPY --from=builder /app/node_modules/is-stream ./node_modules/is-stream\n  COPY --from=builder /app/node_modules/logform ./node_modules/logform\n  COPY --from=builder /app/node_modules/one-time ./node_modules/one-time\n  COPY --from=builder /app/node_modules/readable-stream ./node_modules/readable-stream\n  COPY --from=builder /app/node_modules/safe-stable-stringify ./node_modules/safe-stable-stringify\n  COPY --from=builder /app/node_modules/stack-trace ./node_modules/stack-trace\n  COPY --from=builder /app/node_modules/triple-beam ./node_modules/triple-beam\n  COPY --from=builder /app/node_modules/winston-transport ./node_modules/winston-transport\n...\nI had to dot this for each dependency of my server.js file. This is boring...",
+          "author": {
+            "login": "Dupflo"
+          },
+          "replies": {
+            "nodes": [
+              {
+                "bodyText": "You can potentially use Vercel's nft library (https://github.com/vercel/nft) to get a list of all dependencies. I think they use this under the hood to trace all dependencies for standalone mode and just include what's actually used.\nCreate some Nodejs script that uses this library under the hood and run that Nodejs script at some point during your build process. Point the library to some entry file (maybe your custom server.js file?) and it should give you a list of all dependencies that it detected as being used by that entry file and it's dependencies. It's recursive. Then you can copy all those files into some appropriate output folder in that same Nodejs script.\nI used this library on a project that had a custom server.js and used \"standalone\" output mode. I cannot remember all the specific details how I used it and unfortunately I don't have access to that project anymore to look, but I remember using it at some point in the build process to get all proper dependencies into the project output folders. Wish I could help you more!",
+                "author": {
+                  "login": "marko-hologram"
+                }
+              }
+            ],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Cron jobs triggered on every deployment",
+      "url": "https://github.com/vercel/next.js/discussions/51509",
+      "bodyText": "Summary\nHello,\nI'm using Vercel to host my Next.js application and I have set up a couple of cron jobs as per the official documentation.\nHere is my vercel.json configuration for the cron jobs:\n{\n  \"crons\": [\n    {\n      \"path\": \"/api/cron/reset-free-users-credits\",\n      \"schedule\": \"0 8 * * *\"\n    },\n  ]\n}\nAnd here my route /app/api/cron/reset-free-users-credits.ts\nimport { NextResponse } from \"next/server\";\nimport { prisma } from \"~/server/db/prisma\";\n\nexport async function GET() {\n  // reset credits to 5 for all users in FREE plan\n  try {\n    await prisma.user.updateMany({\n      where: { plan: \"FREE\" },\n      data: { credits: 5 },\n    });\n    console.log(`FREE plan cron success at ${new Date().toLocaleString()}`);\n    return NextResponse.json({ status: 200 });\n  } catch (error: unknown) {\n    console.log(\"cron error:\", error);\n    return NextResponse.json({ status: 500 });\n  }\n}\nAs per my understanding, these cron jobs should only trigger based on the schedule specified. However, I've noticed that these cron jobs are being executed every time I deploy my application on Vercel.\nI tried searching for information regarding this issue, but I couldn't find anything in the official documentation or in community discussions that suggests that cron jobs should run on every deployment.\nCould you please help me understand why this is happening and how I can prevent the cron jobs from running on every deployment? Any guidance would be greatly appreciated.\nThank you for your time and assistance!\nAdditional information\nNo response\nExample\nNo response",
+      "number": 51509,
+      "author": "flosrn",
+      "category": "Help",
+      "comments": [
+        {
+          "id": "DC_kwDOBC3Cis4AXu9v",
+          "bodyText": "I taken a look on the Vercel build and it seems that Vercel execute my cron on every build\n\nI don't understand why",
+          "author": {
+            "login": "flosrn"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4AXvAe",
+          "bodyText": "I moved my cron folder from app/api directory to pages/api directory and now it work, no more cron triggered on every deployment, is this a bug?",
+          "author": {
+            "login": "flosrn"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4ApYZl",
+          "bodyText": "I had the same issue here. I got this fixed keeping the \"api\" folder in \"app\", and added export const dynamic = \"force-dynamic\"; to force the page to be treated as dynamic and not render at building time.\nContext: https://nextjs.org/docs/messages/app-static-to-dynamic-error",
+          "author": {
+            "login": "henriquepcm"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Calling server action throws undefined immediately, without actually calling the server",
+      "url": "https://github.com/vercel/next.js/discussions/67117",
+      "bodyText": "Summary\nI have a form that, in onSubmit has a function that calls a server action function.\nWhen I try to submit the form, and the callback tries to call the server action, it is not called. Instead, it always throws undefined.\nI found someone else having the same problem here, and a suggested solution to something similar here, which didn't work.\nSome server actions work, like my login/logout functions using next-auth.\nEdit: Apparently, it only happens when the developer console is open.\nMinimal reproduction:\n// in TestForm.tsx\n\"use client\";\nimport React from \"react\";\nimport Button from \"./Button\";\nimport { echo } from \"../lib/actions\";\n\nexport default function TestForm() {\n\treturn (\n\t\t<form onSubmit={async () => console.log(await echo(\"hello\"))}>\n\t\t\t<Button type=\"submit\">Submit</Button>\n\t\t</form>\n\t);\n}\n\n// in actions.ts\n\"use server\";\n// other actions \n\nexport async function echo(param: any): Promise<any> {\n\treturn param;\n}\n\nAdditional information\nOperating System:\n  Platform: win32\n  Arch: x64\n  Version: Windows 11 Home\nBinaries:\n  Node: 20.11.0\n  npm: N/A\n  Yarn: N/A\n  pnpm: N/A\nRelevant Packages:\n  next: 14.1.4\n  eslint-config-next: 14.0.4\n  react: 18.3.1\n  react-dom: 18.2.0\n  typescript: 5.4.4\nNext.js Config:\n  output: N/A\nExample\nNo response",
+      "number": 67117,
+      "author": "nir-peled",
+      "category": "Help",
+      "comments": [
+        {
+          "id": "DC_kwDOBC3Cis4ApYYq",
+          "bodyText": "For anyone else who ends up here, upgrade to the latest Next, this seems to have been a bug that masks the error when you pass something invalid as input to a server action. It's fixed now.",
+          "author": {
+            "login": "corwinstephen"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Middleware not working with jsonwebtoken after update.",
+      "url": "https://github.com/vercel/next.js/discussions/38202",
+      "bodyText": "Before updating to the latest version of nextjs the beta version of middleware allowed me to verify my jwt in the function. Now after the update jsonwebtoken does not work as it is a node.js module which is not supported. I am using next-auth credentials provider to handle generating my JWT.\nIs there a workaround or package that i can use for the same functioality?\nimport { NextApiRequest } from 'next'\nimport { getToken } from 'next-auth/jwt'\nimport { getSession } from 'next-auth/react'\nimport { NextResponse, NextRequest } from 'next/server'\nimport jwt from 'jsonwebtoken'\ninterface JwtPayload {\n  group: string\n}\n//Group access pages.\n\n/**\n * ['-'] sting arrays are used because an empty sting value is read as null when performing\n * the check to see if a requested page is part of the allowed list.\n */\nconst CRU_PAGES: string[] = ['-']\nconst FORENSIC_PAGES: string[] = ['-']\nconst EVSPEVIALIST_PAGES: string[] = ['-']\nconst PREVIEW_PAGES: string[] = ['-']\nconst DANY_PAGES: string[] = ['-']\nconst DEV_PAGES: string[] = ['-', 'cases']\nconst TEST_PAGES: string[] = ['-']\n//Default Access Routes\nconst DEFAULT_PAGES: string[] = [\n  '/',\n  'unauthorized',\n  'api',\n  'favicon.ico',\n  'login',\n  'graphql',\n]\n\n//The following function will protect the routes or redirect to unauthorized if not allowed to access a page.\nfunction checkAuthPath(pathname: string, group: string, req: NextApiRequest) {\n  var authorizedPages: string[] = ['']\n  //Based on group assign authorized pages to the authorizedPages array.\n  switch (group) {\n    case 'CRU':\n      authorizedPages = CRU_PAGES\n      break\n    case 'Forensic':\n      authorizedPages = FORENSIC_PAGES\n      break\n    case 'Evidence Specialist':\n      authorizedPages = EVSPEVIALIST_PAGES\n      break\n    case 'Preview':\n      authorizedPages = PREVIEW_PAGES\n      break\n    case 'Dany':\n      authorizedPages = DANY_PAGES\n      break\n    case 'DEVELOPMENT':\n      authorizedPages = DEV_PAGES\n      break\n    default:\n      authorizedPages = TEST_PAGES\n  }\n  authorizedPages = authorizedPages.concat(DEFAULT_PAGES)\n\n  //Determine if request path is in the authorized paths Array. If not redirect to unauthorized.\n  // if (authorizedPages.includes('/' + pathname.split('/')[3])) {\n  //   return NextResponse.next()\n  // }\n  if (\n    authorizedPages.find((element) => {\n      let page = pathname.split('/')[3]\n      if (page.length < 1) {\n        page = '/'\n      }\n      if (page.includes(element)) {\n        return true\n      }\n      return false\n    })\n  ) {\n    return NextResponse.next()\n  } else {\n    console.warn('Unauthorized')\n    if (pathname.split('/')[3].includes('unauthorized')) {\n      return 1\n    }\n    return NextResponse.redirect(new URL('/unauthorized', req.url))\n  }\n}\n\nexport async function middleware(req: NextApiRequest) {\n  const jwt_secret = process.env.JWT_SECRET as jwt.Secret\n  var token = null\n  const jwtToken = await getToken({\n    req: req,\n    secret: process.env.JWT_SECRET,\n    raw: true,\n  })\n  if (jwtToken) {\n    token = jwt.verify(jwtToken, jwt_secret, {\n      algorithms: ['HS512'],\n    }) as JwtPayload\n  }\n\n  const pathname = req.url\n  //console.log(`Pathname: ${pathname}`)\n  if (typeof pathname === 'string') {\n    if (pathname.includes('login&error')) {\n      return NextResponse.rewrite(pathname)\n    }\n    // Allows Error URL Parameters through\n    if (pathname.includes('error')) {\n      return NextResponse.rewrite(pathname)\n    }\n\n    if (pathname.includes('/api/auth') || token) {\n      if (token) {\n        const group = token.group as string\n        return checkAuthPath(pathname, group, req)\n      } else return NextResponse.next()\n    }\n    if (\n      (!token && pathname !==`${process.env.NEXT_URL}/login` ) ||\n      pathname.includes('/api/auth')\n    ) {\n      return NextResponse.redirect(new URL('/login', req.url))\n    }\n  } else {\n    throw new Error('Pathname Undefined')\n  }\n}",
+      "number": 38202,
+      "author": "rlawrence89",
+      "category": "Help",
+      "comments": [
+        {
+          "id": "DC_kwDOBC3Cis4ALqo4",
+          "bodyText": "Hi,\nYou could try to use https://www.npmjs.com/package/jose, which is made to run in almost any JavaScript environment, and at least up to 12.1.6, worked in middleware.\nIt's not a straight replacement though, you'll read up a bit and implement, your sign, verify functions, but it is well documented!\nA bit like this:\nimport {SignJWT, jwtVerify, type JWTPayload} from 'jose';\n\nexport async function sign(payload: Token, secret: string): Promise<string> {\n    const iat = Math.floor(Date.now() / 1000);\n    const exp = iat + 60* 60; // one hour\n\n    return new SignJWT({...payload})\n        .setProtectedHeader({alg: 'HS256', typ: 'JWT'})\n        .setExpirationTime(exp)\n        .setIssuedAt(iat)\n        .setNotBefore(iat)\n        .sign(new TextEncoder().encode(secret));\n}\n\nexport async function verify(token: string, secret: string): Promise<Token> {\n    const {payload} = await jwtVerify(token, new TextEncoder().encode(secret));\n    // run some checks on the returned payload, perhaps you expect some specific values\n\n   // if its all good, return it, or perhaps just return a boolean\n    return payload;\n}",
+          "author": {
+            "login": "icyJoseph"
+          },
+          "replies": {
+            "nodes": [
+              {
+                "bodyText": "Thank You I was able to implement Jose and now my middleware does not throw the previous errors.",
+                "author": {
+                  "login": "rlawrence89"
+                }
+              }
+            ],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4ALsAt",
+          "bodyText": "Hi, All you have to do is to update next-auth to the latest version and everything will work just fine :)",
+          "author": {
+            "login": "go-sama"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4ApYAS",
+          "bodyText": "I'm struggling to use your suggest jose to verify tokens that were generated on an external bun server. the bun server uses jsonwebtoken library and i can't change it because it's our enterprise infra. I keep getting\n[JWSInvalid: Invalid Compact JWS] {\n  code: 'ERR_JWS_INVALID',\n  name: 'JWSInvalid'\n}",
+          "author": {
+            "login": "Ife-Ody"
+          },
+          "replies": {
+            "nodes": [
+              {
+                "bodyText": "Can you decode that in jwt.io? Can you verify it through other means?",
+                "author": {
+                  "login": "icyJoseph"
+                }
+              }
+            ],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Failed to load env from /home/node/.env RangeError: Maximum call stack size exceeded",
+      "url": "https://github.com/vercel/next.js/discussions/70799",
+      "bodyText": "Summary\nHey all, getting the below error in my NextJS 14 application which uses NextAuth 15 beta. Its failing to load the .env file which contains my NextAuth environment variables. Google searches suggest it could be an infinite loop related to my env variables referencing each other, but I havent found where that would be and this error does not appear when running locally, only in prod.\nError:\n> datamesh-website@1.0.0 start\n> next start -p 8080\n\n  ▲ Next.js 14.2.12\n  - Local:        http://localhost:8080\n\n ✓ Starting...\n ⨯ Failed to load env from /home/node/.env.production RangeError: Maximum call stack size exceeded\n    at RegExpStringIterator.next (<anonymous>)\n    at Function.from (<anonymous>)\n    at _searchLast (/home/node/node_modules/@next/env/dist/index.js:1:75)\n    at _interpolate (/home/node/node_modules/@next/env/dist/index.js:1:174)\n    at _interpolate (/home/node/node_modules/@next/env/dist/index.js:1:351)\n    at _interpolate (/home/node/node_modules/@next/env/dist/index.js:1:351)\n    at _interpolate (/home/node/node_modules/@next/env/dist/index.js:1:351)\n    at _interpolate (/home/node/node_modules/@next/env/dist/index.js:1:351)\n    at _interpolate (/home/node/node_modules/@next/env/dist/index.js:1:351)\n    at _interpolate (/home/node/node_modules/@next/env/dist/index.js:1:351)\n ✓ Ready in 761ms\n17:27:57.790\n ⨯ TypeError [ERR_INVALID_URL]: Invalid URL\n    at new NodeError (node:internal/errors:405:5)\n    at new URL (node:internal/url:637:13)\n    at i5 (/home/node/.next/server/app/api/auth/[...nextauth]/route.js:377:52500)\n    at t (/home/node/.next/server/app/api/auth/[...nextauth]/route.js:377:58822)\n    at /home/node/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js:6:36944\n    at /home/node/node_modules/next/dist/server/lib/trace/tracer.js:140:36\n    at NoopContextManager.with (/home/node/node_modules/@opentelemetry/api/build/src/context/NoopContextManager.js:25:19)\n    at ContextAPI.with (/home/node/node_modules/@opentelemetry/api/build/src/api/context.js:60:46)\n    at NoopTracer.startActiveSpan (/home/node/node_modules/@opentelemetry/api/build/src/trace/NoopTracer.js:65:31)\n    at ProxyTracer.startActiveSpan (/home/node/node_modules/@opentelemetry/api/build/src/trace/ProxyTracer.js:36:24) {\n  input: '${NEXTAUTH_URL}',\n  code: 'ERR_INVALID_URL'\n}\n\nSituation:\nI only receive this error when deploying through my companies automated deployment pipelin.\nI do not receive this error when running my project locally with npm run dev or npm run build + npm start\nI added console.log statements to print the environment variables from my .env and those print the values as expected when the npm run build process happens. So this is happening specifically when npm start is executed in the prod environment.\nOne idea I had is: My DevOps team recently added the nextauth secrets in the .env file as a Jenkins environment variable, which I am planning on using so that I dont have sensitive values hardcoded in the project itself. Could that be causing the error? And if so, how do I get those values from the Jenkins env variables? Will it still be process.env.* ?\nI've attached the files that I think are relevant and removed sensitive values. Thank you in advance!\nDockerfile.txt\nenv.txt\nauth.txt\nmiddleware.txt\npackage.txt\nAdditional information\nNo response\nExample\nNo response",
+      "number": 70799,
+      "author": "jordanallenlewis",
+      "category": "Help",
+      "comments": []
+    },
+    {
+      "title": "Parallel Routes default.js vs catchall",
+      "url": "https://github.com/vercel/next.js/discussions/67724",
+      "bodyText": "We're implementing parallel routes in Solid Router and I'm curious why Next recommends the default.js file instead of [...catchall].js for unmatched slots. As far as I can tell they act the same but I might be missing something. Would anyone have insight into why this choice was made?",
+      "number": 67724,
+      "author": "Brendonovich",
+      "category": "App Router",
+      "comments": [
+        {
+          "id": "DC_kwDOBC3Cis4ApX8e",
+          "bodyText": "You ever get an answer to this @Brendonovich ?",
+          "author": {
+            "login": "morgs32"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Every page results in 404 but only from cold start. Anyone else?",
+      "url": "https://github.com/vercel/next.js/discussions/70582",
+      "bodyText": "I'm having real issues debugging this since it only seems to happen on cold starts. If prod or local has not had visits for \"a few hours\" ANY path resolves as 404.\nHowever once refreshed all routes will work perfectly again. I have to wait some random amount of time to see the error again. This happens even with rebooting the server locally.\nI've added logging to the middleware and everything is routing fine. Just always resolving the first call as 404.\nHas anyone seen this? Anyone know how to debug?",
+      "number": 70582,
+      "author": "jesper-bylund",
+      "category": "App Router",
+      "comments": [
+        {
+          "id": "DC_kwDOBC3Cis4ApItU",
+          "bodyText": "In Next.js, the 404 on cold start could be due to slow route initialization after inactivity. Ensure proper use of getStaticProps or getServerSideProps and check if your server fully initializes before handling requests. If deploying on Vercel or similar, review any related cold start configurations.",
+          "author": {
+            "login": "romhenri"
+          },
+          "replies": {
+            "nodes": [
+              {
+                "bodyText": "That's super interesting. Is this still true in Nextjs14 with SSR?",
+                "author": {
+                  "login": "jesper-bylund"
+                }
+              },
+              {
+                "bodyText": "Yes.",
+                "author": {
+                  "login": "romhenri"
+                }
+              }
+            ],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4ApJsw",
+          "bodyText": "Apparently not a Nextjs error, just obfuscated by Nextjs routing.\nWhat's happening is the locale of the next-international pacakge is not getting set, resulting in a 404. Why this happens seem to be related to some sort of nextjs cold start though.\napp/[locale]/page.tsx -> 404, but on refresh 200",
+          "author": {
+            "login": "jesper-bylund"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4ApJwR",
+          "bodyText": "For anyone else struggling with this. It turns out that next-international doesn't handle a default locale. It's supposed to. But in this combo of versions:\n\"next\": \"14.2.13\",\n\"next-international\": \"1.2.4\",\n\nyou have to manually set a default local in your root layout component.",
+          "author": {
+            "login": "jesper-bylund"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4ApOlH",
+          "bodyText": "Turns out my investigation in next-international was completely wrong. I'm still getting 404's from cold start.\nWhat seems to be happening is that Nextjs is unable to handle routing from cold start. Why this is is unclear. My middleware does contain a supabase call. So maybe there's a cold starting lambda to make this call that is timing out?",
+          "author": {
+            "login": "jesper-bylund"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4ApQ6T",
+          "bodyText": "Where is this app deployed to? Is it using App Router or Pages Router? If its a timeout at play, does the 404 take \"longer\" to resolve?",
+          "author": {
+            "login": "icyJoseph"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        },
+        {
+          "id": "DC_kwDOBC3Cis4ApRcB",
+          "bodyText": "@icyJoseph  This is deployed to Vercel. It's using App router. And yes the 404 takes a few seconds to resolve.\nI found a work around that is highly annoying, following this guide from supabase will result in a 404 from cold start: https://supabase.com/docs/guides/auth/server-side/nextjs\nBut if the landing page resolves without supabase, everything works fine.\nThis should mean that cold starting Nextjs on Vercel takes so long that verifying auth from supabase causes a timeout. Making the router resolve as a 404. I didn't find a way to debug this, and for obvious reasons testing is difficult.",
+          "author": {
+            "login": "jesper-bylund"
+          },
+          "replies": {
+            "nodes": [
+              {
+                "bodyText": "Aha, is it the middleware, or just any page that uses the client?",
+                "author": {
+                  "login": "icyJoseph"
+                }
+              },
+              {
+                "bodyText": "It's the middleware. This should work, but on cold start it fails. And there's no real way to debug since this happens in Nextjs router.",
+                "author": {
+                  "login": "jesper-bylund"
+                }
+              },
+              {
+                "bodyText": "And you are 100% sure, it has nothing to do with loading the SDK, but rather, finding the user the first time? Could that be a problem with the location of the DB? or perhaps it itself goes to sleep after a time of inactivity?",
+                "author": {
+                  "login": "icyJoseph"
+                }
+              }
+            ],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Strange behavior with cookies in route handler",
+      "url": "https://github.com/vercel/next.js/discussions/70790",
+      "bodyText": "Summary\nHello! I'm creating a NextJS project and I'm currently being smashed by cookies.\nI have this page:\n// src/app/dashboard/page.tsx\nimport { cookies } from \"next/headers\";\nimport Navbar from \"../components/header\";\nimport axios from \"axios\";\n\nexport default async function Dashboard() {\n\tawait axios.get(\"http://localhost:3000/api/dashboard\");\n\tconsole.log(cookies().getAll());\n\treturn (\n\t\t<main className=\"flex flex-col items-center justify-center min-h-screen bg-black-100\">\n\t\t\t{\"... some code\"}\n\t\t</main>\n\t);\n}\n\nI also have this route handler, where I'm trying to set cookies:\n// src/app/api/dashboard/route.ts\nimport axios from \"axios\";\nimport { cookies } from \"next/headers\";\nimport { NextResponse } from \"next/server\";\n\ninterface TokenData {\n\taccess_token: string;\n\ttoken_type: string;\n\texpires_in: number;\n}\n\nexport async function GET(req: Request) {\n\tconst clientId = process.env.AUTH_SPOTIFY_ID;\n\tconst clientSecret = process.env.AUTH_SPOTIFY_SECRET;\n\n\ttry {\n\t\t// Request token from Spotify API\n\t\tconst { data } = await axios.post(\"https://accounts.spotify.com/api/token\", null, {\n\t\t\theaders: {\n\t\t\t\t\"Content-Type\": \"application/x-www-form-urlencoded\",\n\t\t\t},\n\t\t\tparams: {\n\t\t\t\tgrant_type: \"client_credentials\",\n\t\t\t\tclient_id: clientId,\n\t\t\t\tclient_secret: clientSecret,\n\t\t\t},\n\t\t});\n\n\t\tconst { access_token, expires_in }: TokenData = data;\n\n\t\tconst response = NextResponse.json({ message: \"Ok\", status: 200 });\n\t\tresponse.cookies.set(\"access_token\", access_token, { path: \"/\" });\n\t\treturn response;\n\t} catch (error) {\n\t\tconsole.error(\"Error:\", error);\n\t\treturn NextResponse.json({ error: \"Failed to fetch access token\" });\n\t}\n}\n\nI can't understand why my \"access_token\" cookie is not being set when I make that axios request in localhost:3000/dashboard. It is only set when I hit localhost:3000/api/dashboard\nAdditional information\n**Environment**:\n* Next v14.2.13\n* axios v1.7.7\nExample\nNo response",
+      "number": 70790,
+      "author": "benetche",
+      "category": "Help",
+      "comments": [
+        {
+          "id": "DC_kwDOBC3Cis4ApXxm",
+          "bodyText": "Hi,\nThe problem here is that, await axios.get(\"http://localhost:3000/api/dashboard\");, is making its own request, out to the internet, and back to your route. That is to say, it has its own Request and Response objects, independent of the Request and Response, that the user requesting your page have started.\nIf you assign the response of await axios.get(\"http://localhost:3000/api/dashboard\"); to a value, and then look for the headers->cookies, you'll most likely see the cookie you set in your GET handler.\nMoreover, this is an anti-pattern, you shouldn't:\n\nreach for API/Route Handlers, from your render pass, see more here, https://nextjs-faq.com/fetch-api-in-rsc\nin App Router, because of how HTTP is designed, the outgoing cookies are set before streaming begins, so when you are rendering your components, setting cookies is not possible",
+          "author": {
+            "login": "icyJoseph"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Dynamic Sitemap Updating in Production",
+      "url": "https://github.com/vercel/next.js/discussions/70787",
+      "bodyText": "Summary\nHello,\nI was wondering if it's possible to update the sitemap.xml and/or robots.txt file(s) dynamically (through sitemap.ts & robots.ts) after build process, in production?\nSay we have blog posts or news articles, for example, and as more posts are published, the \"list of valid URLs\" (or something similar) would update. How would I then update the sitemap? Is it possible?\nMy idea is to add two endpoints (with proper authentication) that, when called, regenerate said files for my application. Initial testing with this kind of approach did not work. My endpoints called the real functions to generate sitemap.xml / robots.txt but nothing was updated.\nCurrently I'm just rebuilding the complete application again every 24h through a GH Actions Cron job. The cron job could instead of rebuild just call the endpoints.\nAdditional information\nNo response\nExample\nNo response",
+      "number": 70787,
+      "author": "joonarafael",
+      "category": "Help",
+      "comments": [
+        {
+          "id": "DC_kwDOBC3Cis4ApXwq",
+          "bodyText": "According to the docs, https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap:\n\nsitemap.js is a special Route Handlers that is cached by default unless it uses a dynamic function or dynamic config option.\n\nSo you should be able to export one of these, https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config, such as revalidate, to have it regenerate at production.\nAlternatively, as the docs say, a sitemap file is a special Route Handler, so you could just make a Router Handler, that returns XML, and revalidates every now and then. #52831 - though that shouldn't be necessary.\nI'll run a couple of local tests with revalidate to see it if works, but it should. Confirmed, it does re-run when you export something like export const revalidate = 30 (every 30 seconds).",
+          "author": {
+            "login": "icyJoseph"
+          },
+          "replies": {
+            "nodes": [],
+            "totalCount": 0,
+            "pageInfo": {
+              "hasPreviousPage": false,
+              "hasNextPage": false,
+              "endCursor": ""
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

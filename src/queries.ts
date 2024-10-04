@@ -1,7 +1,9 @@
+import { Comment } from './__generated__/types';
+
 export const DISCUSSIONS_QUERY = /* GraphQL */ `
   query Discussions($name: String!, $owner: String!, $after: String = "") {
     repository(name: $name, owner: $owner) {
-      discussions(first: 10, after: $after) {
+      discussions(first: 100, after: $after) {
         totalCount
         pageInfo {
           hasNextPage
@@ -18,7 +20,7 @@ export const DISCUSSIONS_QUERY = /* GraphQL */ `
           category {
             name
           }
-          comments(first: 10) {
+          comments(first: 100) {
             totalCount
             pageInfo {
               hasNextPage
@@ -47,7 +49,7 @@ export const COMMENTS_QUERY = /* GraphQL */ `
   query Comments($name: String!, $owner: String!, $number: Int!, $after: String!) {
     repository(name: $name, owner: $owner) {
       discussion(number: $number) {
-        comments(first: 10, after: $after) {
+        comments(first: 100, after: $after) {
           pageInfo {
             hasNextPage
             endCursor
@@ -69,3 +71,63 @@ export const COMMENTS_QUERY = /* GraphQL */ `
     }
   }
 `;
+
+export const REPLIES_QUERY = /* GraphQL */ `
+  query Replies($id: ID!, $after: String!) {
+    node(id: $id) {
+      ... on DiscussionComment {
+        replies(first: 100, after: $after) {
+          nodes {
+            bodyText
+            author {
+              login
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+    }
+    rateLimit {
+      cost
+      remaining
+      nodeCount
+    }
+  }
+`;
+
+export function generateBatchQuery(comments: Comment[]) { // 🚨 can't generate types
+  const BATCH_QUERY = `
+    query {
+      ${comments.reduce((acc, comment) => {
+        let queryId = comment.id.replace(/[^a-zA-Z0-9_]/g, 'aaa');
+        let nodeId = comment.id;
+        return acc.concat(`${queryId}: node(id: "${nodeId}") {
+          ... on DiscussionComment {
+            id
+            replies(first: 100) {
+              nodes {
+                bodyText
+                author {
+                  login
+                }
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+            }
+          }
+        }
+        rateLimit {
+          cost
+          remaining
+          nodeCount
+        }`)
+      }, "")}
+    }
+  `;
+  return BATCH_QUERY;
+}
