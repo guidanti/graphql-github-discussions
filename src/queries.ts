@@ -101,12 +101,20 @@ export const REPLIES_QUERY = /* GraphQL */ `
 export function generateBatchQuery(comments: Comment[]) { // 🚨 can't generate types
   const BATCH_QUERY = `
     query {
+      rateLimit {
+        cost
+        remaining
+        nodeCount
+      }
       ${comments.reduce((acc, comment) => {
         let queryId = comment.id.replace(/[^a-zA-Z0-9_]/g, 'aaa');
         let nodeId = comment.id;
         return acc.concat(`${queryId}: node(id: "${nodeId}") {
           ... on DiscussionComment {
             id
+            discussion {
+              number
+            }
             replies(first: 100) {
               nodes {
                 bodyText
@@ -120,11 +128,6 @@ export function generateBatchQuery(comments: Comment[]) { // 🚨 can't generate
               }
             }
           }
-        }
-        rateLimit {
-          cost
-          remaining
-          nodeCount
         }`)
       }, "")}
     }

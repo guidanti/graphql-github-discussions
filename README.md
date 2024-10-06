@@ -1,11 +1,8 @@
 ## Approach
 
-| Key |
-| :-- |
-| 🟢 = queries |
-| 🔴 = loops |
-
 ```
+# 🟢 = queries
+# 🔴 = loops
 .
   ├── 🟢 get x number of discussions
   | └── 🔴 for each discussion
@@ -20,6 +17,15 @@
   |   |     └──  push replies to comment
   |   └── return discussion
   └── more than 100 discussions? loop from the start
+```
+
+```
+[discussion]<-[comment]->[replies]
+
+1st pass: [discussion]<-[comment] => comment_ids
+2nd pass: fetch next set of pages for comments of discussions
+  -> repeat until finished
+3nd pass: batch fetch replies using comment_ids
 ```
 
 ## TODOs
@@ -71,6 +77,8 @@ This would require approximately 1011 queries.
 To anticipate the second scenario, we would need to batch the comments at a level higher so that we can group the comments across multiple discussions:
 
 ```diff
+# 🟢 = queries
+# 🔴 = loops
 .
   ├── 🟢 get x number of discussions
   | └── 🔴 for each discussion

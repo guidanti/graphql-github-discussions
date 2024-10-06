@@ -40,6 +40,7 @@ async function execute() {
   let moreDiscussions = true;
   let lastDiscussionCursor = "";
   try {
+    // paginating through discussions to get all of the discussions
     while(moreDiscussions) {
       const {
         repository,
@@ -64,6 +65,7 @@ async function execute() {
           return acc;
         }, [] as number[]));
 
+        // 
         for(const discussion of discussions) {
           if (discussion) {
             let moreComments = discussion.comments.pageInfo.hasNextPage;
@@ -97,25 +99,36 @@ async function execute() {
             }
           }
         }
-        // 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
-        // 🚨 TODO: aggregate comments so that each bulk request fills up to the max size
-        let commentsBatches = lodash.chunk(discussion.comments, 50);
 
-        // 🔴 this will become redundant if we fill up to the max size
-        if (commentsBatches.length > 1) {
-          let lastBatch = commentsBatches.pop();
-          if ((lastBatch.length / commentsBatches.length) < 5) {
-            lastBatch.forEach((comment, index) => {
-              commentsBatches[index % commentsBatches.length].push(comment);
-            });
-          } else {
-            commentsBatches.push(lastBatch);
-          }
-        }
-        // 🔴
+        // 🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡
+        const allCommentsOfThisBatchOfDiscussions = discussions
+          .flatMap((discussion) => {
+            if (discussion?.__typename === "Discussion") {
+              return {
+                
+              }
+            }
+          })
         
+        // .reduce((acc, discussion) => {
+        //   if (discussion && discussion.number && discussion.comments) {
+        //     return [...acc, {
+        //       number: discussion.number,
+        //       comments: discussion.comments.nodes || [],
+        //     }];
+        //   } else {
+        //     return acc;
+        //   }
+        // }, []);
+
+        console.dir({ allCommentsOfThisBatchOfDiscussions }, { depth: 10 })
+
+        // 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
+        let commentsBatches = lodash.chunk(allCommentsOfThisBatchOfDiscussions, 50);
         for (const commentBatch of commentsBatches) {
-          const batchResults: any = await client(generateBatchQuery(commentBatch)); // 🚨 type
+          const BATCH_QUERY = generateBatchQuery(commentBatch)
+          const batchResults: any = await client(BATCH_QUERY); // 🚨 type
+          throw new Error(BATCH_QUERY);
           
           discussionBatchCost.push(batchResults.rateLimit);
           delete batchResults.rateLimit;
@@ -167,8 +180,10 @@ async function execute() {
             }
           }
         }
-        results.push(discussion);
+
+
         // 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
+        results.push(...discussions);
       }
       lastDiscussionCursor = `${repository?.discussions.pageInfo.endCursor}`;
       if (!repository?.discussions.pageInfo.hasNextPage) {

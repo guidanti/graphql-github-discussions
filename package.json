@@ -16,6 +16,7 @@
     "@graphql-codegen/typescript-operations": "^2.5.3",
     "@octokit/graphql": "^4.8.0",
     "@octokit/graphql-schema": "^11.1.0",
+    "effection": "3.0.3",
     "@types/node": "^22.7.4",
     "lodash": "^4.17.21",
     "tsx": "^4.19.1",
