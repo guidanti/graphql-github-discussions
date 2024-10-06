@@ -1,9 +1,12 @@
 import { Comment } from './__generated__/types.ts';
 
 export const DISCUSSIONS_QUERY = /* GraphQL */ `
-  query Discussions($name: String!, $owner: String!, $after: String = "") {
+  query Discussions($name: String!, $owner: String!, $after: String = "", $first: Int!) {
     repository(name: $name, owner: $owner) {
-      discussions(first: 100, after: $after) {
+      discussions(first: $first, after: $after, orderBy: {
+        field: CREATED_AT,
+        direction: ASC,
+      }) {
         totalCount
         pageInfo {
           hasNextPage
@@ -52,10 +55,10 @@ export const DISCUSSIONS_QUERY = /* GraphQL */ `
 
 
 export const COMMENTS_QUERY = /* GraphQL */ `
-  query Comments($name: String!, $owner: String!, $number: Int!, $after: String!) {
+  query Comments($name: String!, $owner: String!, $number: Int!, $after: String!, $first: Int) {
     repository(name: $name, owner: $owner) {
       discussion(number: $number) {
-        comments(first: 100, after: $after) {
+        comments(first: $first, after: $after) {
           pageInfo {
             hasNextPage
             endCursor
