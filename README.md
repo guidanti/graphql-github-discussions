@@ -88,4 +88,4 @@ To anticipate the second scenario, we would need to batch the comments at a leve
   └── more than 100 discussions? loop from the start
 ```
 
-> We're testing with [next.js](https://github.com/vercel/next.js/discussions?discussions_q=) which has ~22,000 discussions. From a sample data of 1300 discussions, the average comment count was 8. So that should bring us to around 1,760 points for each ingestion.
+> We're testing with [next.js](https://github.com/vercel/next.js/discussions?discussions_q=) which has ~22,000 discussions. From a sample data of 1300 discussions, the average comment count was 8. So that should bring us to around _1,760_ points for each ingestion if we batch query 100 comments, _3,740_ points if we batch query 50 comments.

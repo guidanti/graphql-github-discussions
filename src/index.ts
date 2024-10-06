@@ -64,20 +64,10 @@ async function execute() {
           return acc;
         }, [] as number[]));
 
-        for(const _discussion of discussions) {
-          if (_discussion) {
-            const discussion = {
-              title: _discussion.title,
-              url: _discussion.url,
-              bodyText: _discussion.bodyText,
-              number: _discussion.number,
-              author: _discussion.author?.login,
-              category: _discussion.category?.name,
-              comments: _discussion.comments.nodes ? [..._discussion.comments.nodes] : [],
-            };
-   
-            let moreComments = _discussion.comments.pageInfo.hasNextPage;
-            let lastCommentsCursor = _discussion.comments.pageInfo.endCursor;
+        for(const discussion of discussions) {
+          if (discussion) {
+            let moreComments = discussion.comments.pageInfo.hasNextPage;
+            let lastCommentsCursor = discussion.comments.pageInfo.endCursor;
     
             // only loops if there are more than 100 comments in the discussion
             // shouldn't need to queue this up into batches as there probably
@@ -97,85 +87,88 @@ async function execute() {
               }
               if (repository?.discussion?.comments.nodes) {
                 repository?.discussion?.comments.nodes.forEach(comment => {
-                  discussion.comments.push(comment);
+                  if (discussion?.comments?.nodes?.length) {
+                    discussion.comments.nodes.push(comment);
+                  }
                 });
               }
               lastCommentsCursor = repository?.discussion?.comments.pageInfo.endCursor;
               moreComments = false; // 🚨 repository?.discussion?.comments.pageInfo.hasNextPage
             }
-
-            // 🚨 TODO: aggregate comments so that each bulk request fills up to the max size
-            let commentsBatches = lodash.chunk(discussion.comments, 50);
-
-            // 🔴 this will become redundant if we fill up to the max size
-            if (commentsBatches.length > 1) {
-              let lastBatch = commentsBatches.pop();
-              if ((lastBatch.length / commentsBatches.length) < 5) {
-                lastBatch.forEach((comment, index) => {
-                  commentsBatches[index % commentsBatches.length].push(comment);
-                });
-              } else {
-                commentsBatches.push(lastBatch);
-              }
-            }
-            // 🔴
-            
-            for (const commentBatch of commentsBatches) {
-              const batchResults: any = await client(generateBatchQuery(commentBatch)); // 🚨 type
-              
-              discussionBatchCost.push(batchResults.rateLimit);
-              delete batchResults.rateLimit;
-    
-              const batchSplit: [ // 🚨 type
-                string,
-                {
-                  id,
-                  replies: {
-                    pageInfo: {
-                      hasNextPage: boolean,
-                      endCursor: string,
-                    },
-                    nodes: DiscussionComment[],
-                  }
-                }
-              ][] = Object.entries(batchResults);
-              
-              for (const [_, comment] of batchSplit) {
-                let moreReplies = comment.replies.pageInfo.hasNextPage;
-                let lastRepliesCursor = comment.replies.pageInfo.endCursor;
-
-                // only loops if there are more than 100 replies in a comment
-                while (moreReplies) {
-                  // 🚨 can't use generated RepliesQuery from __generated because it doesn't recognize `... on DiscussionComment`: says `replies` does not exist
-                  const { node: { replies }, rateLimit }: Replies = await client(REPLIES_QUERY, {
-                    id: comment.id,
-                    after: lastRepliesCursor,
-                  });
-                  discussionBatchCost.push(rateLimit);
-
-                  if (replies.nodes && replies.nodes.length) {
-                    comment.replies.nodes.push(...replies.nodes);
-                  }
-                  moreReplies = replies.pageInfo.hasNextPage;
-                  lastRepliesCursor = replies.pageInfo.endCursor;
-                }
-                const discussionComment = discussion.comments.find(_comment => _comment?.id === comment.id) as DiscussionComment;
-                if (discussionComment) {
-                  discussionComment.replies = {
-                    nodes: comment.replies.nodes,
-                    totalCount: 0,
-                    pageInfo: {
-                      hasPreviousPage: false,
-                      hasNextPage: false,
-                      endCursor: ""
-                    }
-                  };
-                }
-              }
-            }
-            results.push(discussion);
           }
         }
+        // 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
+        // 🚨 TODO: aggregate comments so that each bulk request fills up to the max size
+        let commentsBatches = lodash.chunk(discussion.comments, 50);
+
+        // 🔴 this will become redundant if we fill up to the max size
+        if (commentsBatches.length > 1) {
+          let lastBatch = commentsBatches.pop();
+          if ((lastBatch.length / commentsBatches.length) < 5) {
+            lastBatch.forEach((comment, index) => {
+              commentsBatches[index % commentsBatches.length].push(comment);
+            });
+          } else {
+            commentsBatches.push(lastBatch);
+          }
+        }
+        // 🔴
+        
+        for (const commentBatch of commentsBatches) {
+          const batchResults: any = await client(generateBatchQuery(commentBatch)); // 🚨 type
+          
+          discussionBatchCost.push(batchResults.rateLimit);
+          delete batchResults.rateLimit;
+
+          const batchSplit: [ // 🚨 type
+            string,
+            {
+              id,
+              replies: {
+                pageInfo: {
+                  hasNextPage: boolean,
+                  endCursor: string,
+                },
+                nodes: DiscussionComment[],
+              }
+            }
+          ][] = Object.entries(batchResults);
+          
+          for (const [_, comment] of batchSplit) {
+            let moreReplies = comment.replies.pageInfo.hasNextPage;
+            let lastRepliesCursor = comment.replies.pageInfo.endCursor;
+
+            // only loops if there are more than 100 replies in a comment
+            while (moreReplies) {
+              // 🚨 can't use generated RepliesQuery from __generated because it doesn't recognize `... on DiscussionComment`: says `replies` does not exist
+              const { node: { replies }, rateLimit }: Replies = await client(REPLIES_QUERY, {
+                id: comment.id,
+                after: lastRepliesCursor,
+              });
+              discussionBatchCost.push(rateLimit);
+
+              if (replies.nodes && replies.nodes.length) {
+                comment.replies.nodes.push(...replies.nodes);
+              }
+              moreReplies = replies.pageInfo.hasNextPage;
+              lastRepliesCursor = replies.pageInfo.endCursor;
+            }
+            const discussionComment = discussion.comments.find(_comment => _comment?.id === comment.id) as DiscussionComment;
+            if (discussionComment) {
+              discussionComment.replies = {
+                nodes: comment.replies.nodes,
+                totalCount: 0,
+                pageInfo: {
+                  hasPreviousPage: false,
+                  hasNextPage: false,
+                  endCursor: ""
+                }
+              };
+            }
+          }
+        }
+        results.push(discussion);
+        // 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
       }
       lastDiscussionCursor = `${repository?.discussions.pageInfo.endCursor}`;
       if (!repository?.discussions.pageInfo.hasNextPage) {
