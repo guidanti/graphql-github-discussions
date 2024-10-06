@@ -12,10 +12,21 @@ import type {
 import { DISCUSSIONS_QUERY } from "../src/queries.ts";
 
 interface Comment {
+  type: "comment";
   id: string;
   bodyText: string;
   author: string;
   discussionNumber: number;
+}
+
+interface Discussion {
+  type: "discussion";
+  number: number;
+  title: string;
+  url: string;
+  bodyText: string;
+  author: string;
+  category: string;
 }
 
 export function* allDiscussionComments({
@@ -24,8 +35,8 @@ export function* allDiscussionComments({
 }: {
   org: string;
   repo: string;
-}): Operation<Channel<Comment, void>> {
-  const channel = createChannel<Comment>();
+}): Operation<Channel<Comment | Discussion, void>> {
+  const channel = createChannel<Comment | Discussion>();
   
   const graphql = yield* useGraphQL();
 
@@ -45,10 +56,24 @@ export function* allDiscussionComments({
       console.log(`Fetched ${data.repository?.discussions.nodes?.length} discussions for ${JSON.stringify(args)}`)
       for (const discussion of data.repository?.discussions.nodes ?? []) {
         if (discussion) {
+          if (discussion.author) {
+            yield* channel.send({
+              type: "discussion",
+              number: discussion.number,
+              title: discussion.title,
+              url: discussion.url,
+              bodyText: discussion.bodyText,
+              author: discussion.author.login,
+              category: discussion.category.name
+            })
+          } else {
+            console.log(`Skipped discussion:${discussion?.number} because author login is missing.`)
+          }
           // send a discussion here
           for (const comment of discussion?.comments.nodes ?? []) {
             if (comment?.author) {
               yield* channel.send({
+                type: "comment",
                 id: comment.id,
                 bodyText: comment.bodyText,
                 author: comment.author.login,
