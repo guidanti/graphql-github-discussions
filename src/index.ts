@@ -21,6 +21,9 @@ import {
 import fs from 'fs';
 
 async function execute() {
+  if (!process.env.GITHUB_TOKEN) {
+    throw new Error("You need to have GITHUB_TOKEN configured in our local environment");
+  }
   const client = graphql.defaults({
     baseUrl: 'https://api.github.com',
     headers: {
