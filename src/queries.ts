@@ -116,8 +116,8 @@ export function generateBatchQuery(comments: Comment[]) { // 🚨 can't generate
         nodeCount
       }
       ${comments.reduce((acc, comment) => {
-        let queryId = comment.id.replace(/[^a-zA-Z0-9_]/g, 'aaa');
-        let nodeId = comment.id;
+        const queryId = comment.id.replace(/[^a-zA-Z0-9_]/g, 'aaa');
+        const nodeId = comment.id;
         return acc.concat(`${queryId}: node(id: "${nodeId}") {
           ... on DiscussionComment {
             id
