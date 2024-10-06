@@ -1,4 +1,4 @@
-import { Comment } from './__generated__/types';
+import { Comment } from './__generated__/types.ts';
 
 export const DISCUSSIONS_QUERY = /* GraphQL */ `
   query Discussions($name: String!, $owner: String!, $after: String = "") {
@@ -27,11 +27,7 @@ export const DISCUSSIONS_QUERY = /* GraphQL */ `
               endCursor
             }
             nodes {
-              id
-              bodyText
-              author {
-                login
-              }
+              ...DiscussionComment
             }
           }
         }
@@ -43,7 +39,17 @@ export const DISCUSSIONS_QUERY = /* GraphQL */ `
       nodeCount
     }
   }
+
+  fragment DiscussionComment on DiscussionComment {
+    id
+    bodyText
+    author {
+      login
+    }
+  }
 `;
+
+
 
 export const COMMENTS_QUERY = /* GraphQL */ `
   query Comments($name: String!, $owner: String!, $number: Int!, $after: String!) {

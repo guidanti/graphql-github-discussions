@@ -15,7 +15,7 @@ class Reply {
 class Store {
   private discussions: Map<string, Discussion>
   private comments: Map<string, Comment>
-  private replies: Map<string, Replies>
+  private replies: Map<string, Reply>
 
   constructor() {
     this.discussions = new Map();
