@@ -10,7 +10,7 @@ import type { DiscussionsQuery } from "../src/queries.__generated__.ts";
 import { DISCUSSIONS_QUERY } from "../src/queries.ts";
 import { assert } from "jsr:@std/assert@1.0.3";
 
-interface Comment {
+export interface Comment {
   type: "comment";
   id: string;
   bodyText: string;
@@ -18,7 +18,7 @@ interface Comment {
   discussionNumber: number;
 }
 
-interface Discussion {
+export interface Discussion {
   type: "discussion";
   number: number;
   title: string;
@@ -28,7 +28,7 @@ interface Discussion {
   category: string;
 }
 
-interface DiscussionCursor {
+export interface DiscussionCursor {
   type: "discussion-cursor";
   totalCount: number;
   after: CURSOR_VALUE;
@@ -37,7 +37,7 @@ interface DiscussionCursor {
   endCursor: CURSOR_VALUE;
 }
 
-interface CommentCursor {
+export interface CommentCursor {
   discussion: number;
   type: "comment-cursor";
   totalCount: number;
@@ -52,7 +52,7 @@ interface CommentCursor {
  * Middle: string
  * Last: null
  */
-type CURSOR_VALUE = string | null | undefined;
+export type CURSOR_VALUE = string | null | undefined;
 
 type DiscussionQueryValues =
   | Comment

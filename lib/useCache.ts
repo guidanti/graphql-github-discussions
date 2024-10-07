@@ -1,37 +1,53 @@
-import { createContext, call, type Operation } from "npm:effection@3.0.3";
-import { ensureDir } from "jsr:@std/fs@1.0.4";
-import { type JsonWriter, useJsonWriter } from "./useJsonWriter.ts";
+import { createContext, call, type Operation, stream, type Stream } from "npm:effection@3.0.3";
+import { ensureFile } from "jsr:@std/fs@1.0.4";
+import { JSONLinesParseStream, type JSONValue } from "https://deno.land/x/jsonlines@v1.2.1/mod.ts";
+
 
 interface Cache {
-  location: URL;
-  discussions: CachedModel;
-  comments: CachedModel
-}
-
-interface CachedModel {
-  location: URL
-  write: JsonWriter
+  write(key: string, data: unknown): Operation<void>
+  read(key: string): Operation<Stream<JSONValue, unknown>>
 }
 
 export const CacheContext = createContext<Cache>("cache");
 
-export function* initCacheContext({ location }: { location: URL }) {
-  yield* call(() => ensureDir(location));
+interface InitCacheContextOptions { 
+  location: URL
+}
 
-  const discussionPath = new URL("discussions.jsonl", location);
-  const commentsPath = new URL("comments.jsonl", location);
+export function* initCacheContext(options: InitCacheContextOptions) {
+  const cache: Cache = {
+    *write(key, data): Operation<void> {
+      const location = new URL(`./${key}.jsonl`, options.location)
+      yield* call(() => ensureFile(location));
 
-  return yield* CacheContext.set({
-    location,
-    discussions: {
-      location: discussionPath,
-      write: yield* useJsonWriter(discussionPath)
+      const file = yield* call(() =>
+        Deno.open(location, {
+          append: true,
+        })
+      );
+  
+      try {
+        yield* call(() =>
+          file.write(new TextEncoder().encode(`${JSON.stringify(data)}\n`))
+        );
+      } finally {
+        file.close();
+      }
     },
-    comments: {
-      location: commentsPath,
-      write: yield* useJsonWriter(commentsPath)
+    *read(key) {
+      const location = new URL(`./${key}.jsonl`, options.location)
+      const file = yield* call(() => Deno.open(location, { read: true }));
+
+      const lines = file
+          .readable
+          .pipeThrough(new TextDecoderStream())
+          .pipeThrough(new JSONLinesParseStream());
+      
+      return stream(lines)
     }
-  })
+  };
+
+  return yield* CacheContext.set(cache)
 }
 
 export function* useCache(): Operation<Cache> {
