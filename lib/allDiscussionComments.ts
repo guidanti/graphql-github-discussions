@@ -121,8 +121,8 @@ export function* allDiscussionComments({
             );
           }
           yield* channel.send({
-            discussion: discussion.number,
             type: "comment-cursor",
+            discussion: discussion.number,
             after: undefined,
             first,
             totalCount: discussion.comments.totalCount,
