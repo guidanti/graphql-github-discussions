@@ -1,9 +1,9 @@
 import {
-  createChannel,
   call,
-  spawn,
   type Channel,
+  createChannel,
   type Operation,
+  spawn,
 } from "npm:effection@3.0.3";
 import { useGraphQL } from "./useGraphQL.ts";
 import type { DiscussionsQuery } from "../src/queries.__generated__.ts";
@@ -77,6 +77,7 @@ export function* allDiscussionComments({
   let after: CURSOR_VALUE = undefined;
 
   yield* spawn(function* () {
+    let sofar = 0;
     do {
       const args = {
         owner: org,
@@ -99,9 +100,10 @@ export function* allDiscussionComments({
         hasNextPage: !!data.repository.discussions.pageInfo.hasNextPage,
       });
       console.log(
-        `Fetched ${
-          data.repository.discussions.nodes?.length
-        } discussions for ${JSON.stringify(args)}`
+        `Fetched ${sofar += data.repository.discussions.nodes?.length ??
+          0} of ${data.repository.discussions.totalCount} discussions for ${
+          JSON.stringify(args)
+        }`,
       );
       for (const discussion of data.repository.discussions.nodes ?? []) {
         if (discussion) {
@@ -117,7 +119,7 @@ export function* allDiscussionComments({
             });
           } else {
             console.log(
-              `Skipped discussion:${discussion.number} because author login is missing.`
+              `Skipped discussion:${discussion.number} because author login is missing.`,
             );
           }
           yield* channel.send({
@@ -140,7 +142,7 @@ export function* allDiscussionComments({
               });
             } else {
               console.log(
-                `Skipped comment:${comment?.id} because author login is missing.`
+                `Skipped comment:${comment?.id} because author login is missing.`,
               );
             }
           }
