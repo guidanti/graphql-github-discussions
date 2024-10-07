@@ -3,22 +3,22 @@ import { ensureDir } from "jsr:@std/fs@1.0.4";
 import { type JsonWriter, useJsonWriter } from "./useJsonWriter.ts";
 
 interface Cache {
-  discussions: {
-    location: URL;
-    write: JsonWriter;
-  };
-  comments: {
-    location: URL;
-    write: JsonWriter;
-  }
+  discussions: CachedModel;
+  comments: CachedModel
+}
+
+interface CachedModel {
+  location: URL
+  write: JsonWriter
 }
 
 export const CacheContext = createContext<Cache>("cache");
 
 export function* initCacheContext({ location }: { location: URL }) {
   yield* call(() => ensureDir(location));
-  const discussionPath = new URL(".cache/discussion.jsonl", location);
-  const commentsPath = new URL(".cache/comments.jsonl", location);
+
+  const discussionPath = new URL("discussions.jsonl", location);
+  const commentsPath = new URL("comments.jsonl", location);
 
   return yield* CacheContext.set({
     discussions: {

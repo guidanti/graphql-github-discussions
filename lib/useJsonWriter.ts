@@ -13,7 +13,7 @@ export function useJsonWriter(destination: string | URL) {
 
     function* write(data: unknown): Operation<void> {
       yield* call(() =>
-        file.write(new TextEncoder().encode(JSON.stringify(data)))
+        file.write(new TextEncoder().encode(`${JSON.stringify(data)}\n`))
       );
     }
 

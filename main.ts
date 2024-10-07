@@ -3,16 +3,17 @@ import { initGraphQLContext } from "./lib/useGraphQL.ts";
 import { allDiscussionComments } from "./lib/allDiscussionComments.ts";
 import { initCacheContext } from "./lib/useCache.ts";
 
-await main(function* () {
+function* downloadDiscussions({ repo, org }: { repo: string; org: string }) {
   yield* initGraphQLContext();
+
   const { discussions, comments } = yield* initCacheContext({
-    location: new URL(".", import.meta.url),
+    location: new URL(`./.cache/${org}/${repo}/`, import.meta.url),
   });
 
   // read all discussions
   const items = yield* allDiscussionComments({
-    org: "vercel",
-    repo: "next.js",
+    org,
+    repo,
     first: 10,
   });
 
@@ -29,11 +30,11 @@ await main(function* () {
     }
     yield* each.next();
   }
+}
 
-  // caching mechanism
-  // calculating cost
-
-  // fetch remaining comments
-  // fetch all replies for all comments (batch query)
-  // stitch data together
+await main(function* () {
+  yield* downloadDiscussions({
+    org: "vercel",
+    repo: "next.js",
+  });
 });
