@@ -1,11 +1,13 @@
 import { createContext, call, type Operation, stream, type Stream } from "npm:effection@3.0.3";
-import { ensureFile } from "jsr:@std/fs@1.0.4";
+import { ensureFile, exists } from "jsr:@std/fs@1.0.4";
 import { JSONLinesParseStream, type JSONValue } from "https://deno.land/x/jsonlines@v1.2.1/mod.ts";
 
 
 interface Cache {
+  location: URL;
   write(key: string, data: unknown): Operation<void>
-  read(key: string): Operation<Stream<JSONValue, unknown>>
+  read<T>(key: string): Operation<Stream<T, unknown>>
+  has(key: string): Operation<boolean>;
 }
 
 export const CacheContext = createContext<Cache>("cache");
@@ -16,6 +18,7 @@ interface InitCacheContextOptions {
 
 export function* initCacheContext(options: InitCacheContextOptions) {
   const cache: Cache = {
+    location: options.location,
     *write(key, data): Operation<void> {
       const location = new URL(`./${key}.jsonl`, options.location)
       yield* call(() => ensureFile(location));
@@ -34,7 +37,7 @@ export function* initCacheContext(options: InitCacheContextOptions) {
         file.close();
       }
     },
-    *read(key) {
+    *read<T>(key: string) {
       const location = new URL(`./${key}.jsonl`, options.location)
       const file = yield* call(() => Deno.open(location, { read: true }));
 
@@ -43,7 +46,12 @@ export function* initCacheContext(options: InitCacheContextOptions) {
           .pipeThrough(new TextDecoderStream())
           .pipeThrough(new JSONLinesParseStream());
       
-      return stream(lines)
+      return stream(lines as ReadableStream<T>)
+    },
+    *has(key) {
+      const location = new URL(`./${key}.jsonl`, options.location);
+
+      return yield* call(() => exists(location));
     }
   };
 

@@ -8,11 +8,12 @@ import {
 import { initCacheContext } from "./lib/useCache.ts";
 
 function* downloadDiscussions({ repo, org }: { repo: string; org: string }) {
-  yield* initGraphQLContext();
-
+  
   const cache = yield* initCacheContext({
-    location: new URL(`./.cache/${org}/${repo}`, import.meta.url),
+    location: new URL(`./.cache/`, import.meta.url),
   });
+  
+  yield* initGraphQLContext();
 
   // read all discussions
   const items = yield* allDiscussionComments({

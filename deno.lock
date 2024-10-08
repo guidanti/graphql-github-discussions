@@ -4,12 +4,15 @@
     "specifiers": {
       "jsr:@std/assert": "jsr:@std/assert@1.0.3",
       "jsr:@std/assert@1.0.3": "jsr:@std/assert@1.0.3",
+      "jsr:@std/encoding@1": "jsr:@std/encoding@1.0.5",
       "jsr:@std/fs@1.0.4": "jsr:@std/fs@1.0.4",
       "jsr:@std/internal@^1.0.2": "jsr:@std/internal@1.0.4",
       "jsr:@std/path@1.0.6": "jsr:@std/path@1.0.6",
       "jsr:@std/path@^1.0.6": "jsr:@std/path@1.0.6",
+      "jsr:@takker/md5@0.1.0": "jsr:@takker/md5@0.1.0",
       "npm:@octokit/graphql@4.8.0": "npm:@octokit/graphql@4.8.0",
       "npm:@octokit/graphql@^4.8.0": "npm:@octokit/graphql@4.8.0",
+      "npm:@octokit/types@13.6.1": "npm:@octokit/types@13.6.1",
       "npm:effection@3.0.3": "npm:effection@3.0.3",
       "npm:lodash@^4.17.21": "npm:lodash@4.17.21"
     },
@@ -19,6 +22,9 @@
         "dependencies": [
           "jsr:@std/internal@^1.0.2"
         ]
+      },
+      "@std/encoding@1.0.5": {
+        "integrity": "ecf363d4fc25bd85bd915ff6733a7e79b67e0e7806334af15f4645c569fefc04"
       },
       "@std/fs@1.0.4": {
         "integrity": "2907d32d8d1d9e540588fd5fe0ec21ee638134bd51df327ad4e443aaef07123c",
@@ -31,6 +37,9 @@
       },
       "@std/path@1.0.6": {
         "integrity": "ab2c55f902b380cf28e0eec501b4906e4c1960d13f00e11cfbcd21de15f18fed"
+      },
+      "@takker/md5@0.1.0": {
+        "integrity": "4c423d8247aadf7bcb1eb83c727bf28c05c21906e916517395d00aa157b6eae0"
       }
     },
     "npm": {
@@ -54,6 +63,10 @@
         "integrity": "sha512-VsXyi8peyRq9PqIz/tpqiL2w3w80OgVMwBHltTml3LmVvXiphgeqmY9mvBw9Wu7e0QWk/fqD37ux8yP5uVekyQ==",
         "dependencies": {}
       },
+      "@octokit/openapi-types@22.2.0": {
+        "integrity": "sha512-QBhVjcUa9W7Wwhm6DBFu6ZZ+1/t/oYxqc2tp81Pi41YNuJinbFRx8B133qVOrAaBbF7D/m0Et6f9/pZt9Rc+tg==",
+        "dependencies": {}
+      },
       "@octokit/request-error@2.1.0": {
         "integrity": "sha512-1VIvgXxs9WHSjicsRwq8PlR2LR2x6DwsJAaFgzdi0JfJoGSO8mYI/cHJQ+9FbN21aa+DrgNLnwObmyeSC8Rmpg==",
         "dependencies": {
@@ -71,6 +84,12 @@
           "is-plain-object": "is-plain-object@5.0.0",
           "node-fetch": "node-fetch@2.7.0",
           "universal-user-agent": "universal-user-agent@6.0.1"
+        }
+      },
+      "@octokit/types@13.6.1": {
+        "integrity": "sha512-PHZE9Z+kWXb23Ndik8MKPirBPziOc0D2/3KH1P+6jK5nGWe96kadZuE4jev2/Jq7FvIfTlT2Ltg8Fv2x1v0a5g==",
+        "dependencies": {
+          "@octokit/openapi-types": "@octokit/openapi-types@22.2.0"
         }
       },
       "@octokit/types@6.41.0": {

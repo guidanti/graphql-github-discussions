@@ -85,9 +85,8 @@ export function* allDiscussionComments({
         first,
         after,
       };
-      const data = yield* call(() =>
-        graphql<DiscussionsQuery>(DISCUSSIONS_QUERY, args)
-      );
+      
+      const data = yield* graphql<DiscussionsQuery>(DISCUSSIONS_QUERY, args);
 
       assert(data.repository, `Could not fetch ${org}/${repo}`);
 
