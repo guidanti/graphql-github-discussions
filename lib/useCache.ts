@@ -1,6 +1,6 @@
 import { createContext, call, type Operation, stream, type Stream } from "npm:effection@3.0.3";
 import { ensureFile, exists } from "jsr:@std/fs@1.0.4";
-import { JSONLinesParseStream, type JSONValue } from "https://deno.land/x/jsonlines@v1.2.1/mod.ts";
+import { JSONLinesParseStream } from "https://deno.land/x/jsonlines@v1.2.1/mod.ts";
 
 
 interface Cache {

@@ -1,5 +1,4 @@
 import {
-  call,
   type Channel,
   createChannel,
   type Operation,
@@ -85,7 +84,7 @@ export function* allDiscussionComments({
         first,
         after,
       };
-      
+
       const data = yield* graphql<DiscussionsQuery>(DISCUSSIONS_QUERY, args);
 
       assert(data.repository, `Could not fetch ${org}/${repo}`);
