@@ -1,65 +1,16 @@
+import { assert } from "jsr:@std/assert@1.0.3";
 import {
   type Channel,
   createChannel,
   type Operation,
   spawn,
 } from "npm:effection@3.0.3";
-import { useGraphQL } from "./useGraphQL.ts";
+import { useGraphQL } from "../lib/useGraphQL.ts";
 import type { DiscussionsQuery } from "../src/queries.__generated__.ts";
 import { DISCUSSIONS_QUERY } from "../src/queries.ts";
-import { assert } from "jsr:@std/assert@1.0.3";
+import type { CURSOR_VALUE, DiscussionEntries } from "../types.ts";
 
-export interface Comment {
-  type: "comment";
-  id: string;
-  bodyText: string;
-  author: string;
-  discussionNumber: number;
-}
-
-export interface Discussion {
-  type: "discussion";
-  number: number;
-  title: string;
-  url: string;
-  bodyText: string;
-  author: string;
-  category: string;
-}
-
-export interface DiscussionCursor {
-  type: "discussion-cursor";
-  totalCount: number;
-  after: CURSOR_VALUE;
-  first: number;
-  hasNextPage: boolean;
-  endCursor: CURSOR_VALUE;
-}
-
-export interface CommentCursor {
-  discussion: number;
-  type: "comment-cursor";
-  totalCount: number;
-  after: CURSOR_VALUE;
-  first: number;
-  hasNextPage: boolean;
-  endCursor: CURSOR_VALUE;
-}
-
-/**
- * Start: undefined
- * Middle: string
- * Last: null
- */
-export type CURSOR_VALUE = string | null | undefined;
-
-type DiscussionQueryValues =
-  | Comment
-  | Discussion
-  | DiscussionCursor
-  | CommentCursor;
-
-export function* allDiscussionComments({
+export function* fetchDiscussions({
   org,
   repo,
   first = 100,
@@ -67,8 +18,8 @@ export function* allDiscussionComments({
   org: string;
   repo: string;
   first?: number;
-}): Operation<Channel<DiscussionQueryValues, void>> {
-  const channel = createChannel<DiscussionQueryValues>();
+}): Operation<Channel<DiscussionEntries, void>> {
+  const channel = createChannel<DiscussionEntries>();
 
   const graphql = yield* useGraphQL();
 
