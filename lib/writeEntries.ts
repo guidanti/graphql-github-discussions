@@ -30,7 +30,7 @@ export function* writeEntries(items: Stream<DiscussionEntries, void>): Operation
         break;
       case "comment":
         yield* cache.write(
-          `comments/${commentCursor?.discussion}-${
+          `comments/${commentCursor?.discussionId}-${
             commentCursor?.after ?? "undefined"
           }`,
           item,

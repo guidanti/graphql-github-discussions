@@ -10,6 +10,7 @@ await main(function* () {
   });
 
   yield* initGraphQLContext();
+
   yield* writeEntries(
     yield* fetchDiscussions({
       org: "vercel",
@@ -17,4 +18,6 @@ await main(function* () {
       first: 50,
     }),
   );
+
+  
 });

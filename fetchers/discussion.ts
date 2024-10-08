@@ -6,9 +6,62 @@ import {
   spawn,
 } from "npm:effection@3.0.3";
 import { useGraphQL } from "../lib/useGraphQL.ts";
-import type { DiscussionsQuery } from "../src/queries.__generated__.ts";
-import { DISCUSSIONS_QUERY } from "../src/queries.ts";
+import type { DiscussionsQuery } from "../__generated__/types.ts";
 import type { CURSOR_VALUE, DiscussionEntries } from "../types.ts";
+
+export const DISCUSSIONS_QUERY = /* GraphQL */ `
+  query Discussions($name: String!, $owner: String!, $after: String = "", $first: Int!) {
+    repository(name: $name, owner: $owner) {
+      discussions(first: $first, after: $after, orderBy: {
+        field: CREATED_AT,
+        direction: ASC,
+      }) {
+        totalCount
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          id
+          title
+          url
+          bodyText
+          number
+          author {
+            login
+          }
+          category {
+            name
+          }
+          comments(first: 100) {
+            totalCount
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            nodes {
+              ...DiscussionComment
+            }
+          }
+        }
+      }
+    }
+    rateLimit {
+      cost
+      remaining
+      nodeCount
+    }
+  }
+
+  fragment DiscussionComment on DiscussionComment {
+    id
+    bodyText
+    author {
+      login
+    }
+  }
+`;
+
 
 export function* fetchDiscussions({
   org,
@@ -59,6 +112,7 @@ export function* fetchDiscussions({
           if (discussion.author) {
             yield* channel.send({
               type: "discussion",
+              id: discussion.id,
               number: discussion.number,
               title: discussion.title,
               url: discussion.url,
@@ -73,7 +127,7 @@ export function* fetchDiscussions({
           }
           yield* channel.send({
             type: "comment-cursor",
-            discussion: discussion.number,
+            discussionId: discussion.id,
             after: undefined,
             first,
             totalCount: discussion.comments.totalCount,
@@ -106,4 +160,4 @@ export function* fetchDiscussions({
   });
 
   return channel;
-}
+};

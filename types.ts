@@ -8,6 +8,7 @@ export interface Comment {
 
 export interface Discussion {
   type: "discussion";
+  id: string;
   number: number;
   title: string;
   url: string;
@@ -26,7 +27,7 @@ export interface DiscussionCursor {
 }
 
 export interface CommentCursor {
-  discussion: number;
+  discussionId: string;
   type: "comment-cursor";
   totalCount: number;
   after: CURSOR_VALUE;
