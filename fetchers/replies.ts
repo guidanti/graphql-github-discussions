@@ -11,5 +11,6 @@ export function* fetchReplies({
   const results = yield* cache.getAllFilePaths("./discussions");
   for (const result of yield* each(results)) {
     console.log(result);
+    yield* each.next();
   }
 }

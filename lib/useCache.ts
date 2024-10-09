@@ -7,7 +7,7 @@ interface Cache {
   write(key: string, data: unknown): Operation<void>
   read<T>(key: string): Operation<Stream<T, unknown>>
   has(key: string): Operation<boolean>;
-  getAllFilePaths(directory: string): Operation<AsyncIterableIterator<WalkEntry>>;
+  getAllFilePaths(directory: string): Operation<Stream<WalkEntry, unknown>>;
 }
 
 export const CacheContext = createContext<Cache>("cache");
@@ -55,7 +55,8 @@ export function* initCacheContext(options: InitCacheContextOptions) {
     },
     *getAllFilePaths(directory: string) {
       const location = new URL(directory, options.location);
-      return yield* call(() => walk(location, { includeDirs: false }));
+      const filePaths = yield* call(() => walk(location, { includeDirs: false }));
+      return stream(filePaths);
     }
   };
 
