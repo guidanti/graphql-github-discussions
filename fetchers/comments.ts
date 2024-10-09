@@ -14,7 +14,7 @@ interface fetchCommentsOptions {
 
 export function* fetchComments({
   incompleteComments,
-  first = 100,
+  first = 50,
 }: fetchCommentsOptions): Operation<Channel<DiscussionEntries, void>> {
   const graphql = yield* useGraphQL();
   const channel = createChannel<DiscussionEntries>();

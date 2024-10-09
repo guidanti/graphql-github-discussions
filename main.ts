@@ -40,7 +40,7 @@ await main(function* () {
   const incompleteComments: CommentCursor[] = yield* fetchDiscussions({
     org: "vercel",
     repo: "next.js",
-    first: 70,
+    first: 50,
   });
 
   yield* fetchComments({ incompleteComments });
