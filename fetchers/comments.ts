@@ -5,8 +5,9 @@ import {
   type Operation,
 } from "npm:effection@3.0.3";
 import { useCache } from "../lib/useCache.ts";
-import { CommentCursor, DiscussionEntries } from "../types.ts";
+import { DiscussionEntries } from "../types.ts";
 import { useGraphQL } from "../lib/useGraphQL.ts";
+import { CommentCursor } from "./discussion.ts";
 
 export function* fetchComments(): Operation<Channel<DiscussionEntries, void>> {
   const cache = yield* useCache();
