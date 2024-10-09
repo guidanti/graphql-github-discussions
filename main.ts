@@ -3,6 +3,7 @@ import { fetchDiscussions, CommentCursor } from "./fetchers/discussion.ts";
 import { initCacheContext } from "./lib/useCache.ts";
 import { initGraphQLContext } from "./lib/useGraphQL.ts";
 import { fetchComments } from "./fetchers/comments.ts";
+import { fetchReplies } from "./fetchers/replies.ts";
 import { initEntriesContext } from "./lib/useEntries.ts";
 
 await main(function* () {
@@ -54,6 +55,8 @@ await main(function* () {
   });
 
   yield* fetchComments({ incompleteComments });
+
+  yield* fetchReplies();
 
   console.log("Done ✅");
 });

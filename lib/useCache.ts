@@ -1,13 +1,13 @@
 import { createContext, call, type Operation, stream, type Stream } from "npm:effection@3.0.3";
-import { ensureFile, exists } from "jsr:@std/fs@1.0.4";
+import { ensureFile, exists, walk, type WalkEntry } from "jsr:@std/fs@1.0.4";
 import { JSONLinesParseStream } from "https://deno.land/x/jsonlines@v1.2.1/mod.ts";
-
 
 interface Cache {
   location: URL;
   write(key: string, data: unknown): Operation<void>
   read<T>(key: string): Operation<Stream<T, unknown>>
   has(key: string): Operation<boolean>;
+  getAllFilePaths(directory: string): Operation<AsyncIterableIterator<WalkEntry>>;
 }
 
 export const CacheContext = createContext<Cache>("cache");
@@ -52,6 +52,10 @@ export function* initCacheContext(options: InitCacheContextOptions) {
       const location = new URL(`./${key}.jsonl`, options.location);
 
       return yield* call(() => exists(location));
+    },
+    *getAllFilePaths(directory: string) {
+      const location = new URL(directory, options.location);
+      return yield* call(() => walk(location, { includeDirs: false }));
     }
   };
 
