@@ -17,6 +17,14 @@ export interface Discussion {
   category: string;
 }
 
+export interface Reply {
+  type: "reply";
+  bodyText: string;
+  author: string;
+  parentCommentId: string;
+  discussionNumber: number;
+}
+
 /**
  * Start: undefined
  * Middle: string
@@ -26,4 +34,5 @@ export type CURSOR_VALUE = string | null | undefined;
 
 export type DiscussionEntries =
   | Comment
-  | Discussion;
+  | Discussion
+  | Reply;
