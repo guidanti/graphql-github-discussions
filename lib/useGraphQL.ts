@@ -3,6 +3,7 @@ import { graphql } from "npm:@octokit/graphql@4.8.0";
 import { RequestParameters } from "npm:@octokit/types@13.6.1";
 import { md5 } from "jsr:@takker/md5@0.1.0";
 import { encodeHex } from "jsr:@std/encoding@1";
+import chalk from "npm:chalk@5.3.0";
 
 import { assert } from "jsr:@std/assert@1.0.3";
 import { initCacheContext, useCache } from "./useCache.ts";
@@ -63,7 +64,7 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
           if (data?.rateLimit) {
             console.info(
               // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
-              `GitHub API Query cost ${data.rateLimit.cost} and remaining ${data.rateLimit.remaining}`,
+              `GitHub API Query ${chalk.green("cost", data.rateLimit.cost)} and remaining ${chalk.green(data.rateLimit.remaining)}`,
             );
           }
 

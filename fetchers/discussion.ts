@@ -4,6 +4,7 @@ import type { DiscussionsQuery } from "../__generated__/types.ts";
 import { useEntries } from "../lib/useEntries.ts";
 import { useGraphQL } from "../lib/useGraphQL.ts";
 import type { CURSOR_VALUE } from "../types.ts";
+import chalk from "npm:chalk@5.3.0";
 
 export interface CommentCursor {
   discussionId: string;
@@ -53,8 +54,8 @@ export function* fetchDiscussions({
     assert(data.repository, `Could not fetch ${org}/${repo}`);
 
     console.log(
-      `Fetched ${progress += data.repository.discussions.nodes?.length ??
-        0} of ${data.repository.discussions.totalCount} discussions for ${
+      `Fetched ${chalk.blue(progress += data.repository.discussions.nodes?.length ??
+        0)} of ${chalk.blue(data.repository.discussions.totalCount)} discussions for ${
         JSON.stringify(parameters)
       }`,
     );
@@ -73,7 +74,7 @@ export function* fetchDiscussions({
           });
         } else {
           console.log(
-            `Skipped discussion:${discussion.number} because author login is missing.`,
+            chalk.gray(`Skipped discussion:${discussion.number} because author login is missing.`),
           );
         }
         if (discussion.comments.pageInfo.hasNextPage) {
@@ -95,7 +96,7 @@ export function* fetchDiscussions({
             });
           } else {
             console.log(
-              `Skipped comment:${comment?.id} because author login is missing.`,
+              chalk.gray(`Skipped comment:${comment?.id} because author login is missing.`),
             );
           }
         }

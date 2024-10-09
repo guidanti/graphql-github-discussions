@@ -6,6 +6,7 @@ import {
 import { DiscussionEntries } from "../types.ts";
 import { useGraphQL } from "../lib/useGraphQL.ts";
 import { CommentCursor } from "./discussion.ts";
+import chalk from "npm:chalk@5.3.0";
 
 interface fetchCommentsOptions {
   incompleteComments: CommentCursor[];
@@ -22,7 +23,9 @@ export function* fetchComments({
   let cursors: CommentCursor[] = incompleteComments;
 
   do {
-    console.log(`Batch querying ${cursors.length} discussions for additional comments`);
+    console.log(
+      `Batch querying ${chalk.blue(cursors.length, "discussions")} for additional comments`,
+    );
     const data: BatchQuery = yield* graphql(
       `query BatchedComments {
         ${
@@ -83,14 +86,13 @@ export function* fetchComments({
           });
         } else {
           console.log(
-            `Skipped comment:${comment?.id} because author login is missing.`,
+            chalk.gray(`Skipped comment:${comment?.id} because author login is missing.`),
           );
         }
       };
     }
   } while (cursors.length > 0);
 
-  console.log("Finished getting all comments ✅");
   return channel;
 }
 
