@@ -32,8 +32,15 @@ await main(function* () {
           }
           break;
         }
-        case "replies": {
-          yield* cache.write()
+        case "reply": {
+          const key = `/discussions/${item?.discussionNumber}/${item.parentCommentId}`;
+          if (yield* cache.has(key)) {
+            yield* cache.write(
+              key,
+              item,
+            );
+          }
+          break;
         }
       }
       yield* each.next();
