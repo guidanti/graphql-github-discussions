@@ -62,6 +62,7 @@ export function* fetchComments({
     delete data.rateLimit;
     cursors = []
 
+    let commentsCount = 0;
     for (const [_, discussion] of Object.entries(data)) {
       if (discussion.comments.pageInfo.hasNextPage) {
         cursors.push({
@@ -71,6 +72,7 @@ export function* fetchComments({
           endCursor: discussion.comments.pageInfo.endCursor,
         });
       }
+      commentsCount += discussion.comments.nodes.length;
       for (const comment of discussion.comments.nodes) {
         if (comment?.author) {
           yield* entries.send({
@@ -87,6 +89,9 @@ export function* fetchComments({
         }
       };
     }
+    console.log(
+      `Retrieved ${chalk.blue(commentsCount, commentsCount > 1 ? "comments" : "comment")} from batch query`
+    );
   } while (cursors.length > 0);
 }
 
