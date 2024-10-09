@@ -22,6 +22,7 @@ export function* fetchComments({
   let cursors: CommentCursor[] = incompleteComments;
 
   do {
+    console.log(`Batch querying ${cursors.length} discussions for additional comments`);
     const data: BatchQuery = yield* graphql(
       `query BatchedComments {
         ${
@@ -90,7 +91,6 @@ export function* fetchComments({
   } while (cursors.length > 0);
 
   console.log("Finished getting all comments ✅");
-
   return channel;
 }
 
