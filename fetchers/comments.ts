@@ -20,7 +20,7 @@ export function* fetchComments({
 
   do {
     console.log(
-      `Batch querying ${chalk.blue(cursors.length, "discussions")} for additional comments`,
+      `Batch querying ${chalk.blue(cursors.length, cursors.length > 1 ? "discussions" : "discussion")} for additional comments`,
     );
     const data: BatchQuery = yield* graphql(
       `query BatchedComments {
