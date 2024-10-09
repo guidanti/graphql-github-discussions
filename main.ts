@@ -17,7 +17,7 @@ await main(function* () {
       switch (item.type) {
         case "discussion": {
           yield* cache.write(
-            `discussions/${item.id}`,
+            `discussions/${item.number}`,
             item,
           );
           break;
