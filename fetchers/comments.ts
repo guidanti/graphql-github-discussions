@@ -24,14 +24,45 @@ export function* fetchComments(): Operation<Channel<DiscussionEntries, void>> {
     yield* each.next();
   }
 
+  interface RateLimit {
+    cost: number;
+    remaining: number;
+    nodeCount: number;
+  } // 🚨
+
+  type BatchQuery = {
+    [key: string]: {
+      id: string;
+      comments: {
+        totalCount: number;
+        pageInfo: {
+          hasNextPage: boolean;
+          endCursor: string;
+        };
+        nodes: {
+          id: string;
+          bodyText: string;
+          author: {
+            login: string;
+          };
+          discussion: {
+            number: number;
+          }
+        }[];
+      }
+    }
+  } & RateLimit; // 🚨
+
   do {
-    const data = yield* graphql(
+    const data: BatchQuery = yield* graphql(
       `query BatchedComments {
         ${
         cursors.map((item, index) => `
         _${index}: node(id: "${item.discussionId}") {
         ... on Discussion {
+          id
           comments(first: ${item.first}, after: "${item.endCursor}") {
+            totalCount
             pageInfo {
               hasNextPage
               endCursor
@@ -41,6 +72,9 @@ export function* fetchComments(): Operation<Channel<DiscussionEntries, void>> {
               bodyText
               author {
                 login
+              }
+              discussion {
+                number
               }
             }
           }
@@ -57,20 +91,38 @@ export function* fetchComments(): Operation<Channel<DiscussionEntries, void>> {
       {},
     );
 
-    console.log(data)
-    // channel.send({ })
+    delete data.rateLimit;
 
-    // cursors = extractCursorsFrom(data);
     cursors = []
+    for (const [_, discussion] of Object.entries(data)) {
+      if (discussion.comments.pageInfo.hasNextPage) {
+        cursors.push({
+          type: "comment-cursor",
+          discussionId: discussion.id,
+          first: 50,
+          totalCount: discussion.comments.totalCount,
+          hasNextPage: discussion.comments.pageInfo.hasNextPage,
+          endCursor: discussion.comments.pageInfo.endCursor,
+          after: undefined,
+        });
+      }
+      for (const comment of discussion.comments.nodes) {
+        if (comment?.author) {
+          yield* channel.send({
+            type: "comment",
+            id: comment.id,
+            bodyText: comment.bodyText,
+            author: comment.author.login,
+            discussionNumber: comment.discussion.number,
+          });
+        } else {
+          console.log(
+            `Skipped comment:${comment?.id} because author login is missing.`,
+          );
+        }
+      };
+    }
   } while (cursors.length > 0);
 
   return channel;
 }
-
-/**
- *  rateLimit {
- *    cost
- *    remaining
- *    nodeCount
- *  }
- */

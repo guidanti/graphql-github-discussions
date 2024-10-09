@@ -21,7 +21,8 @@ await main(function* () {
   );
 
   yield* writeEntries(
-    yield* fetchComments()
-  )
+    yield* fetchComments(),
+  );
 
+  console.log("Done ✅")
 });

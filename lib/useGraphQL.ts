@@ -41,10 +41,10 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
       return function* query<ResponseData>(
         query: string,
         parameters: RequestParameters,
-      ): Operation<ResponseData> {
-        const key = `${encodeHex(md5(query))}-${
-          Object.keys(parameters).map((p) => `${p}:${parameters[p]}`).join("-")
-        }`;
+        ): Operation<ResponseData> {
+          const key = `${encodeHex(md5(query))}-${
+            Object.keys(parameters).map((p) => `${p}:${parameters[p]}`).join("-")
+          }`;
 
         if (yield* cache.has(key)) {
           for (
