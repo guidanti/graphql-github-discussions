@@ -3,6 +3,7 @@ import { fetchDiscussions } from "./fetchers/discussion.ts";
 import { initCacheContext } from "./lib/useCache.ts";
 import { initGraphQLContext } from "./lib/useGraphQL.ts";
 import { writeEntries } from "./lib/writeEntries.ts";
+import { fetchComments } from "./fetchers/comments.ts";
 
 await main(function* () {
   yield* initCacheContext({
@@ -19,5 +20,8 @@ await main(function* () {
     }),
   );
 
-  
+  yield* writeEntries(
+    yield* fetchComments()
+  )
+
 });

@@ -1,42 +1,76 @@
-import { each } from "npm:effection@3.0.3";
+import {
+  type Channel,
+  createChannel,
+  each,
+  type Operation,
+} from "npm:effection@3.0.3";
 import { useCache } from "../lib/useCache.ts";
-import { CommentCursor } from "../types.ts";
+import { CommentCursor, DiscussionEntries } from "../types.ts";
+import { useGraphQL } from "../lib/useGraphQL.ts";
 
-export const COMMENTS_QUERY = /* GraphQL */ `
-  query Comments($name: String!, $owner: String!, $number: Int!, $after: String!, $first: Int) {
-    repository(name: $name, owner: $owner) {
-      discussion(number: $number) {
-        comments(first: $first, after: $after) {
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-          nodes {
-            id
-            bodyText
-            author {
-              login
+export function* fetchComments(): Operation<Channel<DiscussionEntries, void>> {
+  const cache = yield* useCache();
+  const graphql = yield* useGraphQL();
+  const channel = createChannel<DiscussionEntries>();
+
+  let cursors: CommentCursor[] = [];
+
+  for (
+    const item of yield* each(
+      yield* cache.read<CommentCursor>("./comments/_cursors"),
+    )
+  ) {
+    cursors.push(item);
+    yield* each.next();
+  }
+
+  do {
+    const data = yield* graphql(
+      `query BatchedComments {
+        ${
+        cursors.map((item, index) => `
+        _${index}: node(id: "${item.discussionId}") {
+        ... on Discussion {
+          comments(first: ${item.first}, after: "${item.endCursor}") {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            nodes {
+              id
+              bodyText
+              author {
+                login
+              }
             }
           }
         }
       }
-    }
-  }
-`;
+    `).join("\n")
+      }
+        rateLimit {
+          cost
+          remaining
+          nodeCount
+        }
+      }`,
+      {},
+    );
 
-export function* fetchComments() {
-  const cache = yield *useCache();
+    console.log(data)
+    // channel.send({ })
 
-  // let query = `
+    // cursors = extractCursorsFrom(data);
+    cursors = []
+  } while (cursors.length > 0);
 
-  //   rateLimit {
-  //     cost
-  //     remaining
-  //     nodeCount
-  //   }
-  // `;
-  // for (const item of yield* each(yield* cache.read<CommentCursor>('./comments/has-more'))) {
-    
-  //   yield* each.next();
-  // }
+  return channel;
 }
+
+/**
+ *  rateLimit {
+ *    cost
+ *    remaining
+ *    nodeCount
+ *  }
+ */

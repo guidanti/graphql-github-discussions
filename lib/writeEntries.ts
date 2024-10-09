@@ -1,8 +1,14 @@
-import { type Stream, each, type Operation } from "npm:effection@3.0.3";
-import { CommentCursor, DiscussionCursor, DiscussionEntries } from "../types.ts";
-import { useCache } from './useCache.ts';
+import { each, type Operation, type Stream } from "npm:effection@3.0.3";
+import {
+  CommentCursor,
+  DiscussionCursor,
+  DiscussionEntries,
+} from "../types.ts";
+import { useCache } from "./useCache.ts";
 
-export function* writeEntries(items: Stream<DiscussionEntries, void>): Operation<void> {
+export function* writeEntries(
+  items: Stream<DiscussionEntries, void>,
+): Operation<void> {
   const cache = yield* useCache();
 
   let discussionCursor: DiscussionCursor | undefined;
@@ -13,29 +19,36 @@ export function* writeEntries(items: Stream<DiscussionEntries, void>): Operation
       case "discussion-cursor":
         discussionCursor = item;
         break;
-      case "discussion":
+      case "discussion": {
+        const key = `discussions/${discussionCursor?.after ?? "undefined"}`;
+
         yield* cache.write(
-          `discussions/${discussionCursor?.after ?? "undefined"}`,
+          key,
           item,
         );
         break;
+      }
       case "comment-cursor":
         commentCursor = item;
         if (commentCursor.hasNextPage) {
           yield* cache.write(
-            `comments/has-more`,
+            `comments/_cursors`,
             commentCursor,
           );
         }
         break;
-      case "comment":
-        yield* cache.write(
-          `comments/${commentCursor?.discussionId}-${
-            commentCursor?.after ?? "undefined"
-          }`,
-          item,
-        );
+      case "comment": {
+        const key = `comments/${commentCursor?.discussionId}-${
+          commentCursor?.after ?? "undefined"
+        }`;
+        if (!(yield* cache.has(key))) {
+          yield* cache.write(
+            key,
+            item,
+          );
+        }
         break;
+      }
     }
     yield* each.next();
   }

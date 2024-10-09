@@ -22,51 +22,57 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
     "You need to have GITHUB_TOKEN configured in our local environment",
   );
 
-  const currentCache = yield* useCache();
+  return yield* GraphQLContext.set(
+    yield* call(function* () {
+      const currentCache = yield* useCache();
 
-  const cache = yield* initCacheContext({
-    location: new URL("./github/", currentCache.location),
-  });
+      const cache = yield* initCacheContext({
+        location: new URL("./github/", currentCache.location),
+      });
 
-  const client = graphql.defaults({
-    baseUrl: "https://api.github.com",
-    headers: {
-      authorization: `token ${GITHUB_TOKEN}`,
-      "X-Github-Next-Global-ID": 1,
-    },
-  });
+      const client = graphql.defaults({
+        baseUrl: "https://api.github.com",
+        headers: {
+          authorization: `token ${GITHUB_TOKEN}`,
+          "X-Github-Next-Global-ID": 1,
+        },
+      });
 
-  function* query<ResponseData>(
-    query: string,
-    parameters: RequestParameters,
-  ): Operation<ResponseData> {
-    const key = `${encodeHex(md5(query))}-${
-      Object.keys(parameters).map((p) => `${p}:${parameters[p]}`).join("-")
-    }`;
+      return function* query<ResponseData>(
+        query: string,
+        parameters: RequestParameters,
+      ): Operation<ResponseData> {
+        const key = `${encodeHex(md5(query))}-${
+          Object.keys(parameters).map((p) => `${p}:${parameters[p]}`).join("-")
+        }`;
 
-    if (yield* cache.has(key)) {
-      for (const data of yield* each(yield* cache.read<ResponseData>(key))) {
-        return data;
-      }
-      console.error(`This could happen if cached document had no records.`);
-      return null as ResponseData;
-    } else {
-      const data = yield* call(() => client<ResponseData>(query, parameters));
+        if (yield* cache.has(key)) {
+          for (
+            const data of yield* each(yield* cache.read<ResponseData>(key))
+          ) {
+            return data;
+          }
+          console.error(`This could happen if cached document had no records.`);
+          return null as ResponseData;
+        } else {
+          const data = yield* call(() =>
+            client<ResponseData>(query, parameters)
+          );
 
-      // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
-      if (data?.rateLimit) {
-        console.info(
           // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
-          `GitHub API Query cost ${data.rateLimit.cost} and remaining ${data.rateLimit.remaining}`,
-        );
-      }
+          if (data?.rateLimit) {
+            console.info(
+              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
+              `GitHub API Query cost ${data.rateLimit.cost} and remaining ${data.rateLimit.remaining}`,
+            );
+          }
 
-      yield* cache.write(key, data);
-      return data;
-    }
-  }
-
-  return yield* GraphQLContext.set(query);
+          yield* cache.write(key, data);
+          return data;
+        }
+      };
+    }),
+  );
 }
 
 export function* useGraphQL(): Operation<GraphQLQueryFunction> {
