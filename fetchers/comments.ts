@@ -1,10 +1,6 @@
-import {
-  type Channel,
-  createChannel,
-  type Operation,
-} from "npm:effection@3.0.3";
-import { DiscussionEntries } from "../types.ts";
+import { type Operation } from "npm:effection@3.0.3";
 import { useGraphQL } from "../lib/useGraphQL.ts";
+import { useEntries } from "../lib/useEntries.ts";
 import { CommentCursor } from "./discussion.ts";
 import chalk from "npm:chalk@5.3.0";
 
@@ -16,9 +12,9 @@ interface fetchCommentsOptions {
 export function* fetchComments({
   incompleteComments,
   first = 50,
-}: fetchCommentsOptions): Operation<Channel<DiscussionEntries, void>> {
+}: fetchCommentsOptions): Operation<void> {
+  const entries = yield* useEntries();
   const graphql = yield* useGraphQL();
-  const channel = createChannel<DiscussionEntries>();
 
   let cursors: CommentCursor[] = incompleteComments;
 
@@ -77,7 +73,7 @@ export function* fetchComments({
       }
       for (const comment of discussion.comments.nodes) {
         if (comment?.author) {
-          yield* channel.send({
+          yield* entries.send({
             type: "comment",
             id: comment.id,
             bodyText: comment.bodyText,
@@ -92,8 +88,6 @@ export function* fetchComments({
       };
     }
   } while (cursors.length > 0);
-
-  return channel;
 }
 
 interface RateLimit {
