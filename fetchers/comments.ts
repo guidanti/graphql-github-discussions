@@ -90,7 +90,7 @@ export function* fetchComments({
       };
     }
     console.log(
-      `Retrieved ${chalk.blue(commentsCount, commentsCount > 1 ? "comments" : "comment")} from batch query`
+      `Retrieved ${chalk.blue(commentsCount, commentsCount > 1 ? "comments" : "comment")} from batch query`,
     );
   } while (cursors.length > 0);
 }
