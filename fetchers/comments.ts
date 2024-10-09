@@ -1,59 +1,27 @@
-import {
-  type Channel,
-  createChannel,
-  each,
-  type Operation,
-} from "npm:effection@3.0.3";
-import { useCache } from "../lib/useCache.ts";
-import { CommentCursor, DiscussionEntries } from "../types.ts";
+import { type Operation } from "npm:effection@3.0.3";
 import { useGraphQL } from "../lib/useGraphQL.ts";
+import { useEntries } from "../lib/useEntries.ts";
+import { CommentCursor } from "./discussion.ts";
+import chalk from "npm:chalk@5.3.0";
 
-export function* fetchComments(): Operation<Channel<DiscussionEntries, void>> {
-  const cache = yield* useCache();
+interface fetchCommentsOptions {
+  incompleteComments: CommentCursor[];
+  first?: number;
+}
+
+export function* fetchComments({
+  incompleteComments,
+  first = 50,
+}: fetchCommentsOptions): Operation<void> {
+  const entries = yield* useEntries();
   const graphql = yield* useGraphQL();
-  const channel = createChannel<DiscussionEntries>();
 
-  let cursors: CommentCursor[] = [];
-
-  for (
-    const item of yield* each(
-      yield* cache.read<CommentCursor>("./comments/_cursors"),
-    )
-  ) {
-    cursors.push(item);
-    yield* each.next();
-  }
-
-  interface RateLimit {
-    cost: number;
-    remaining: number;
-    nodeCount: number;
-  } // 🚨
-
-  type BatchQuery = {
-    [key: string]: {
-      id: string;
-      comments: {
-        totalCount: number;
-        pageInfo: {
-          hasNextPage: boolean;
-          endCursor: string;
-        };
-        nodes: {
-          id: string;
-          bodyText: string;
-          author: {
-            login: string;
-          };
-          discussion: {
-            number: number;
-          }
-        }[];
-      }
-    }
-  } & RateLimit; // 🚨
+  let cursors: CommentCursor[] = incompleteComments;
 
   do {
+    console.log(
+      `Batch querying ${chalk.blue(cursors.length, cursors.length > 1 ? "discussions" : "discussion")} for additional comments`,
+    );
     const data: BatchQuery = yield* graphql(
       `query BatchedComments {
         ${
@@ -92,23 +60,22 @@ export function* fetchComments(): Operation<Channel<DiscussionEntries, void>> {
     );
 
     delete data.rateLimit;
-
     cursors = []
+
+    let commentsCount = 0;
     for (const [_, discussion] of Object.entries(data)) {
       if (discussion.comments.pageInfo.hasNextPage) {
         cursors.push({
-          type: "comment-cursor",
           discussionId: discussion.id,
-          first: 50,
+          first,
           totalCount: discussion.comments.totalCount,
-          hasNextPage: discussion.comments.pageInfo.hasNextPage,
           endCursor: discussion.comments.pageInfo.endCursor,
-          after: undefined,
         });
       }
+      commentsCount += discussion.comments.nodes.length;
       for (const comment of discussion.comments.nodes) {
         if (comment?.author) {
-          yield* channel.send({
+          yield* entries.send({
             type: "comment",
             id: comment.id,
             bodyText: comment.bodyText,
@@ -117,12 +84,42 @@ export function* fetchComments(): Operation<Channel<DiscussionEntries, void>> {
           });
         } else {
           console.log(
-            `Skipped comment:${comment?.id} because author login is missing.`,
+            chalk.gray(`Skipped comment:${comment?.id} because author login is missing.`),
           );
         }
       };
     }
+    console.log(
+      `Retrieved ${chalk.blue(commentsCount, commentsCount > 1 ? "comments" : "comment")} from batch query`
+    );
   } while (cursors.length > 0);
-
-  return channel;
 }
+
+interface RateLimit {
+  cost: number;
+  remaining: number;
+  nodeCount: number;
+} // 🚨
+
+type BatchQuery = {
+  [key: string]: {
+    id: string;
+    comments: {
+      totalCount: number;
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor: string;
+      };
+      nodes: {
+        id: string;
+        bodyText: string;
+        author: {
+          login: string;
+        };
+        discussion: {
+          number: number;
+        }
+      }[];
+    }
+  }
+} & RateLimit; // 🚨
