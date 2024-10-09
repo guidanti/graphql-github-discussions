@@ -1,58 +1,25 @@
 import {
   type Channel,
   createChannel,
-  each,
   type Operation,
 } from "npm:effection@3.0.3";
-import { useCache } from "../lib/useCache.ts";
 import { DiscussionEntries } from "../types.ts";
 import { useGraphQL } from "../lib/useGraphQL.ts";
 import { CommentCursor } from "./discussion.ts";
 
-export function* fetchComments(): Operation<Channel<DiscussionEntries, void>> {
-  const cache = yield* useCache();
+interface fetchCommentsOptions {
+  incompleteComments: CommentCursor[];
+  first?: number;
+}
+
+export function* fetchComments({
+  incompleteComments,
+  first = 100,
+}: fetchCommentsOptions): Operation<Channel<DiscussionEntries, void>> {
   const graphql = yield* useGraphQL();
   const channel = createChannel<DiscussionEntries>();
 
-  let cursors: CommentCursor[] = [];
-
-  for (
-    const item of yield* each(
-      yield* cache.read<CommentCursor>("./comments/_cursors"),
-    )
-  ) {
-    cursors.push(item);
-    yield* each.next();
-  }
-
-  interface RateLimit {
-    cost: number;
-    remaining: number;
-    nodeCount: number;
-  } // 🚨
-
-  type BatchQuery = {
-    [key: string]: {
-      id: string;
-      comments: {
-        totalCount: number;
-        pageInfo: {
-          hasNextPage: boolean;
-          endCursor: string;
-        };
-        nodes: {
-          id: string;
-          bodyText: string;
-          author: {
-            login: string;
-          };
-          discussion: {
-            number: number;
-          }
-        }[];
-      }
-    }
-  } & RateLimit; // 🚨
+  let cursors: CommentCursor[] = incompleteComments;
 
   do {
     const data: BatchQuery = yield* graphql(
@@ -93,18 +60,15 @@ export function* fetchComments(): Operation<Channel<DiscussionEntries, void>> {
     );
 
     delete data.rateLimit;
-
     cursors = []
+
     for (const [_, discussion] of Object.entries(data)) {
       if (discussion.comments.pageInfo.hasNextPage) {
         cursors.push({
-          type: "comment-cursor",
           discussionId: discussion.id,
-          first: 50,
+          first,
           totalCount: discussion.comments.totalCount,
-          hasNextPage: discussion.comments.pageInfo.hasNextPage,
           endCursor: discussion.comments.pageInfo.endCursor,
-          after: undefined,
         });
       }
       for (const comment of discussion.comments.nodes) {
@@ -125,5 +89,36 @@ export function* fetchComments(): Operation<Channel<DiscussionEntries, void>> {
     }
   } while (cursors.length > 0);
 
+  console.log("Finished getting all comments ✅");
+
   return channel;
 }
+
+interface RateLimit {
+  cost: number;
+  remaining: number;
+  nodeCount: number;
+} // 🚨
+
+type BatchQuery = {
+  [key: string]: {
+    id: string;
+    comments: {
+      totalCount: number;
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor: string;
+      };
+      nodes: {
+        id: string;
+        bodyText: string;
+        author: {
+          login: string;
+        };
+        discussion: {
+          number: number;
+        }
+      }[];
+    }
+  }
+} & RateLimit; // 🚨

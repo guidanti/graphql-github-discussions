@@ -1,5 +1,5 @@
 import { each, main, spawn } from "npm:effection@3.0.3";
-import { fetchDiscussions } from "./fetchers/discussion.ts";
+import { fetchDiscussions, CommentCursor } from "./fetchers/discussion.ts";
 import { initCacheContext } from "./lib/useCache.ts";
 import { initGraphQLContext } from "./lib/useGraphQL.ts";
 import { fetchComments } from "./fetchers/comments.ts";
@@ -37,13 +37,13 @@ await main(function* () {
     }
   });
 
-  yield* fetchDiscussions({
+  const incompleteComments: CommentCursor[] = yield* fetchDiscussions({
     org: "vercel",
     repo: "next.js",
-    first: 50,
+    first: 70,
   });
 
-  yield* fetchComments();
+  yield* fetchComments({ incompleteComments });
 
   console.log("Done ✅");
 });
