@@ -26,16 +26,6 @@ export interface DiscussionCursor {
   endCursor: CURSOR_VALUE;
 }
 
-export interface CommentCursor {
-  discussionId: string;
-  type: "comment-cursor";
-  totalCount: number;
-  after: CURSOR_VALUE;
-  first: number;
-  hasNextPage: boolean;
-  endCursor: CURSOR_VALUE;
-}
-
 /**
  * Start: undefined
  * Middle: string
@@ -46,5 +36,4 @@ export type CURSOR_VALUE = string | null | undefined;
 export type DiscussionEntries =
   | Comment
   | Discussion
-  | DiscussionCursor
-  | CommentCursor;
+  | DiscussionCursor;

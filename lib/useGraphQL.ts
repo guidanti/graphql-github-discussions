@@ -9,7 +9,7 @@ import { initCacheContext, useCache } from "./useCache.ts";
 
 type GraphQLQueryFunction = <ResponseData>(
   query: string,
-  parameters: RequestParameters,
+  parameters?: RequestParameters,
 ) => Operation<ResponseData>;
 
 export const GraphQLContext = createContext<GraphQLQueryFunction>("graphql");
@@ -40,7 +40,7 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
 
       return function* query<ResponseData>(
         query: string,
-        parameters: RequestParameters,
+        parameters: RequestParameters = {},
         ): Operation<ResponseData> {
           const key = `${encodeHex(md5(query))}-${
             Object.keys(parameters).map((p) => `${p}:${parameters[p]}`).join("-")
