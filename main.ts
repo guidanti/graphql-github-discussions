@@ -32,6 +32,9 @@ await main(function* () {
           }
           break;
         }
+        case "replies": {
+          yield* cache.write()
+        }
       }
       yield* each.next();
     }
