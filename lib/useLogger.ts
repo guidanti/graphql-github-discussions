@@ -1,25 +1,15 @@
 import {
   createContext,
   Operation,
-  resource,
 } from "npm:effection@3.0.3";
 
 export const LoggerContext = createContext<Console>(
   "logger",
 );
 
-export function createLogger() {
-  return resource<Console>(
-    function* (provide) {
-      yield* provide(console);
-    }
-  );
-}
-
-export function* initLoggerContext(): Operation<
+export function* initLoggerContext(logger: Console): Operation<
   Console
 > {
-  const logger = yield* createLogger();
   return yield* LoggerContext.set(logger);
 }
 
