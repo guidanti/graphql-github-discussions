@@ -18,20 +18,18 @@ export function* fetchReplies({
   const graphql = yield* useGraphQL();
   const entries = yield* useEntries();
 
-  // let subscription = yield* results;
+  let subscription = yield* cache.find<Comment>("discussions/*/*");
 
-  // let next = yield* subscription.next();
-  // console.dir(next, { depth: 2 });
-
-  // while (!next.done) {
-  //   console.dir(next, { depth: 2 });
-  //   next = yield* subscription.next();
-  // }
-  for (const result of yield* each(cache.find<Comment>("discussions/*/*"))) {
-    console.log("loggint out results")
-    console.log(result)
-    yield* each.next();
+  let next = yield* subscription.next();
+  while (!next.done) {
+    console.dir(next, { depth: 2 });
+    next = yield* subscription.next();
   }
+  // for (const result of yield* each(cache.find<Comment>("discussions/*/*"))) {
+  //   console.log("loggint out results")
+  //   console.log(result)
+  //   yield* each.next();
+  // }
   console.log("done with the operatin");
   // const batches = chunk(comments, batch);
   // for (const [index, batch] of batches.entries()) {

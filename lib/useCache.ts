@@ -77,7 +77,6 @@ function createCache(options: InitCacheContextOptions): Cache {
   function* find<T>(glob: string): Stream<T, void> {
     const queue = createQueue<T, void>();
 
-    
     const reg = globToRegExp(`${options.location.pathname}/${glob}`, {
       globstar: true,
     });
@@ -97,10 +96,12 @@ function createCache(options: InitCacheContextOptions): Cache {
           basename(file.name, ".jsonl"),
         );
         const items = yield* read<T>(key);
-        for (const item of yield* each(items)) {
-          console.log("before send", item);
-          yield* each.next();
-          queue.add(item);
+
+        const subscription = yield* items;
+        let next = yield* subscription.next();
+        while (!next.done) {
+          queue.add(next.value);
+          next = yield* subscription.next();
         }
       }
 
