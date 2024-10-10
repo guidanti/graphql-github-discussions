@@ -35,8 +35,8 @@ await main(function* () {
           break;
         }
         case "reply": {
-          const key = `/discussions/${item?.discussionNumber}/${item.parentCommentId}/${item}`;
-          if (yield* cache.has(key)) {
+          const key = `/discussions/${item?.discussionNumber}/${item.parentCommentId}/${item.id}`;
+          if (!(yield* cache.has(key))) {
             yield* cache.write(
               key,
               item,

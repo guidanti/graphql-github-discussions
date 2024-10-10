@@ -19,6 +19,7 @@ export interface Discussion {
 
 export interface Reply {
   type: "reply";
+  id: string;
   bodyText: string;
   author: string;
   parentCommentId: string;
