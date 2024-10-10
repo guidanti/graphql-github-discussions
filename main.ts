@@ -7,6 +7,8 @@ import { fetchReplies } from "./fetchers/replies.ts";
 import { initEntriesContext } from "./lib/useEntries.ts";
 import { Cursor } from "./types.ts";
 import { initLoggerContext } from "./lib/useLogger.ts";
+import { md5 } from "jsr:@takker/md5@0.1.0";
+import { encodeHex } from "jsr:@std/encoding@1";
 
 await main(function* () {
   const logger = yield* initLoggerContext(console);
@@ -30,7 +32,7 @@ await main(function* () {
           break;
         }
         case "comment": {
-          const key = `/discussions/${item?.discussionNumber}/${item.id}`;
+          const key = `/discussions/${item?.discussionNumber}/${encodeHex(md5(item.id))}`;
           if (!(yield* cache.has(key))) {
             yield* cache.write(
               key,
@@ -40,7 +42,7 @@ await main(function* () {
           break;
         }
         case "reply": {
-          const key = `/discussions/${item?.discussionNumber}/${item.parentCommentId}/${item.id}`;
+          const key = `/discussions/${item?.discussionNumber}/${encodeHex(md5(item.parentCommentId))}/${encodeHex(md5(item.id))}`;
           if (!(yield* cache.has(key))) {
             yield* cache.write(
               key,
@@ -57,7 +59,7 @@ await main(function* () {
   const incompleteComments: Cursor[] = yield* fetchDiscussions({
     org: "vercel",
     repo: "next.js",
-    first: 50,
+    first: 10,
   });
 
   yield* fetchComments({ incompleteComments });
