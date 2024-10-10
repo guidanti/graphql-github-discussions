@@ -4,6 +4,7 @@ import { useCache } from "../lib/useCache.ts";
 import { useEntries } from "../lib/useEntries.ts";
 import { Comment, Cursor } from "../types.ts";
 import chalk from "npm:chalk@5.3.0";
+import { useLogger } from "../lib/useLogger.ts";
 
 export function* fetchReplies({
   first = 50,
@@ -15,6 +16,7 @@ export function* fetchReplies({
   const cache = yield* useCache();
   const entries = yield* useEntries();
   const graphql = yield* useGraphQL();
+  const logger = yield* useLogger();
 
   const results = yield* cache.find<Comment>("discussions/*/*");
   let cursors: Cursor[] = [];
@@ -86,7 +88,7 @@ export function* fetchReplies({
                 discussionNumber: reply.discussion.number,
               })
             } else {
-              console.log(
+              logger.log(
                 chalk.gray(`Skipped comment:${comment?.id} because author login is missing.`),
               );
             }
@@ -94,7 +96,7 @@ export function* fetchReplies({
           repliesCount += comment.replies.nodes.length;
         }
       } while (cursors.length);
-      console.log(
+      logger.log(
         `Retrieved ${chalk.blue(repliesCount, repliesCount > 1 ? "replies" : "reply")} from batch query`,
       );
     }

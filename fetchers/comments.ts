@@ -3,6 +3,7 @@ import { useGraphQL } from "../lib/useGraphQL.ts";
 import { useEntries } from "../lib/useEntries.ts";
 import { Cursor } from "../types.ts";
 import chalk from "npm:chalk@5.3.0";
+import { useLogger } from "../lib/useLogger.ts";
 
 interface fetchCommentsOptions {
   incompleteComments: Cursor[];
@@ -15,11 +16,12 @@ export function* fetchComments({
 }: fetchCommentsOptions): Operation<void> {
   const entries = yield* useEntries();
   const graphql = yield* useGraphQL();
+  const logger = yield* useLogger();
 
   let cursors: Cursor[] = incompleteComments;
 
   do {
-    console.log(
+    logger.log(
       `Batch querying ${chalk.blue(cursors.length, cursors.length > 1 ? "discussions" : "discussion")} for additional comments`,
     );
     const data: DiscussionsBatchQuery = yield* graphql(
@@ -82,13 +84,13 @@ export function* fetchComments({
             discussionNumber: comment.discussion.number,
           });
         } else {
-          console.log(
+          logger.log(
             chalk.gray(`Skipped comment:${comment?.id} because author login is missing.`),
           );
         }
       };
     }
-    console.log(
+    logger.log(
       `Retrieved ${chalk.blue(commentsCount, commentsCount > 1 ? "comments" : "comment")} from batch query`,
     );
   } while (cursors.length > 0);

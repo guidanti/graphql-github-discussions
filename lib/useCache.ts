@@ -15,6 +15,7 @@ import { ensureFile, exists, walk, walkSync } from "jsr:@std/fs@1.0.4";
 import { JSONLinesParseStream } from "https://deno.land/x/jsonlines@v1.2.1/mod.ts";
 import { minimatch } from "npm:minimatch@10.0.1";
 import { basename, dirname, globToRegExp, join } from "jsr:@std/path@1.0.6";
+import { useLogger } from "./useLogger.ts";
 
 interface Cache {
   location: URL;
@@ -31,6 +32,7 @@ interface InitCacheContextOptions {
 }
 
 export function* initCacheContext(options: InitCacheContextOptions) {
+  const logger = yield* useLogger();
   const cache: Cache = {
     location: options.location,
     *write(key, data): Operation<void> {
@@ -88,13 +90,13 @@ export function* initCacheContext(options: InitCacheContextOptions) {
           );
           const items = yield* cache.read<T>(key);
           for (const item of yield* each(items)) {
-            console.log("before send", item)
+            logger.log("before send", item)
             yield* channel.send(item);
-            console.log("called next");
+            logger.log("called next");
             yield* each.next();
           }
         }
-        console.log("finished")
+        logger.log("finished")
       });
       
       return channel;

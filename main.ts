@@ -6,8 +6,10 @@ import { fetchComments } from "./fetchers/comments.ts";
 import { fetchReplies } from "./fetchers/replies.ts";
 import { initEntriesContext } from "./lib/useEntries.ts";
 import { Cursor } from "./types.ts";
+import { initLoggerContext } from "./lib/useLogger.ts";
 
 await main(function* () {
+  const logger = yield* initLoggerContext(console);
   const cache = yield* initCacheContext({
     location: new URL(`./.cache/`, import.meta.url),
   });
@@ -62,5 +64,5 @@ await main(function* () {
 
   yield* fetchReplies();
 
-  console.log("Done ✅");
+  logger.log("Done ✅");
 });

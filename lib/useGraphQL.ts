@@ -7,6 +7,7 @@ import chalk from "npm:chalk@5.3.0";
 
 import { assert } from "jsr:@std/assert@1.0.3";
 import { initCacheContext, useCache } from "./useCache.ts";
+import { useLogger } from "./useLogger.ts";
 
 type GraphQLQueryFunction = <ResponseData>(
   query: string,
@@ -17,6 +18,7 @@ export const GraphQLContext = createContext<GraphQLQueryFunction>("graphql");
 
 export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
   const GITHUB_TOKEN = Deno.env.get("GITHUB_TOKEN");
+  const logger = yield* useLogger();
 
   assert(
     GITHUB_TOKEN,
@@ -53,7 +55,7 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
           ) {
             return data;
           }
-          console.error(`This could happen if cached document had no records.`);
+          logger.error(`This could happen if cached document had no records.`);
           return null as ResponseData;
         } else {
           const data = yield* call(() =>
@@ -62,7 +64,7 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
 
           // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
           if (data?.rateLimit) {
-            console.info(
+            logger.info(
               // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
               `GitHub API Query ${chalk.green("cost", data.rateLimit.cost)} and remaining ${chalk.green(data.rateLimit.remaining)}`,
             );

@@ -7,9 +7,7 @@ export const LoggerContext = createContext<Console>(
   "logger",
 );
 
-export function* initLoggerContext(logger: Console): Operation<
-  Console
-> {
+export function* initLoggerContext(logger: Console): Operation<Console> {
   return yield* LoggerContext.set(logger);
 }
 
