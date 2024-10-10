@@ -17,13 +17,24 @@ export function* fetchReplies({
   const cache = yield* useCache();
   const graphql = yield* useGraphQL();
   const entries = yield* useEntries();
-  
+
   const results = yield* cache.find<Comment>("discussions/*/*");
-  for (const result of yield* each(results)) {
-    console.log("loggint out results")
-    console.log(result)
-    yield* each.next();
+
+  let subscription = yield* results;
+
+  let next = yield* subscription.next();
+  console.dir(next, { depth: 2 });
+
+  while (!next.done) {
+    console.dir(next, { depth: 2 });
+    next = yield* subscription.next();
   }
+  // for (const result of yield* each(results)) {
+  //   console.log("loggint out results")
+  //   console.log(result)
+  //   yield* each.next();
+  // }
+  console.log("done with the operatin");
   // const batches = chunk(comments, batch);
   // for (const [index, batch] of batches.entries()) {
   //   let moreReplies: CommentCursor[] = [];
@@ -80,10 +91,10 @@ export function* fetchReplies({
   //         }`,
   //       {},
   //     );
-      
+
   //     delete data.rateLimit;
   //     moreReplies = [];
-      
+
   //     let repliesCount = 0;
   //     for (const [_, comment] of Object.entries(data)) {
   //       if (comment.replies.pageInfo.hasNextPage) {
@@ -141,8 +152,8 @@ type BatchQuery = {
         };
         discussion: {
           number: number;
-        }
+        };
       }[];
-    }
-  }
+    };
+  };
 } & RateLimit; // 🚨

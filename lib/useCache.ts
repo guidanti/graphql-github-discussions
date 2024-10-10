@@ -70,6 +70,22 @@ export function* initCacheContext(options: InitCacheContextOptions) {
     *find<T>(glob: string): Operation<Channel<T, void>> {
       const channel = createChannel<T, void>();
 
+      const iterable = walkSync(options.location, {
+        includeDirs: false,
+        includeFiles: true,
+        match: [
+          globToRegExp(`${options.location.pathname}/${glob}`, {
+            globstar: true,
+          }),
+        ],
+      });
+
+      let next = iterable.next();
+      while (!next.done) {
+        next = iterable.next();
+      }
+      console.log("Finished")
+
       yield* spawn(function* () {
         for (
           const file of walkSync(options.location, {
@@ -82,21 +98,24 @@ export function* initCacheContext(options: InitCacheContextOptions) {
             ],
           })
         ) {
-          const key = join(
-            dirname(file.path.replace(options.location.pathname, "")),
-            basename(file.name, ".jsonl"),
-          );
-          const items = yield* cache.read<T>(key);
-          for (const item of yield* each(items)) {
-            console.log("before send", item)
-            yield* channel.send(item);
-            console.log("called next");
-            yield* each.next();
-          }
+          // const key = join(
+          //   dirname(file.path.replace(options.location.pathname, "")),
+          //   basename(file.name, ".jsonl"),
+          // );
+          // const items = yield* cache.read<T>(key);
+          // for (const item of yield* each(items)) {
+          //   console.log("before send", item);
+          //   yield* channel.send(item);
+          //   yield* each.next();
+          // }
+          channel.send(file)
+          console.log("value sent")
+          // console.log(file);
         }
-        console.log("finished")
+        console.log("finished loop")
+        yield* channel.close();
       });
-      
+
       return channel;
     },
   };
