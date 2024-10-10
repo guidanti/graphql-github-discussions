@@ -18,10 +18,13 @@ await main(function* () {
     for (const item of yield* each(entries)) {
       switch (item.type) {
         case "discussion": {
-          yield* cache.write(
-            `discussions/${item.number}`,
-            item,
-          );
+          const key =  `discussions/${item.number}`;
+          if (!(yield* cache.has(key))) {
+            yield* cache.write(
+              `discussions/${item.number}`,
+              item,
+            );
+          }
           break;
         }
         case "comment": {
