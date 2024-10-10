@@ -18,111 +18,104 @@ export function* fetchReplies({
   const graphql = yield* useGraphQL();
   const entries = yield* useEntries();
   
-  // const results = yield* cache.getAllFilePaths("./discussions");
-  const comments: string[] = [
-    "./discussions/59435/DC_kwDOBC3Cis4Ad3au",
-    "./discussions/68140/DC_kwDOBC3Cis4Am1un",
-    "./discussions/35779/DC_kwDOBC3Cis4AJdMV",
-    "./discussions/12967/DC_kwDOBC3Cis1FkA",
-  ];
-  // for (const result of yield* each(results)) {
-  //   if (/.*\/discussions\/\d+\/.*\.json/.test(result.path)) {
-  //     comments.push(result.path);
-  //   }
-  //   yield* each.next();
-  // }
-  const batches = chunk(comments, batch);
-  for (const [index, batch] of batches.entries()) {
-    let moreReplies: CommentCursor[] = [];
-    do {
-      console.log(
-        `Batch querying for replies of all comments: batch ${chalk.blue(index + 1)} of ${chalk.blue(batches.length)}`,
-      );
-      for (const file of batch) {
-        for (
-          const data of yield* each(yield* cache.read<Comment>(file))
-        ) {
-          moreReplies.push({
-            discussionId: data.id, // 🚨 rename to id?
-            totalCount: 0, // 🚨 unnecessary
-            first,
-            endCursor: null,
-          });
-          yield* each.next();
-        }
-      }
-      const data: BatchQuery = yield* graphql(
-        `query BatchedComments {
-          ${
-            moreReplies.map((item, index) => `
-            _${index}: node(id: "${item.discussionId}") {
-            ... on Comment {
-              id
-              replies(first: ${item.first}, after: "${item.endCursor}") {
-                totalCount
-                pageInfo {
-                  hasNextPage
-                  endCursor
-                }
-                nodes {
-                  id
-                  bodyText
-                  author {
-                    login
-                  }
-                  discussion {
-                    number
-                  }
-                }
-              }
-            }
-          }
-        `).join("\n")
-          }
-            rateLimit {
-              cost
-              remaining
-              nodeCount
-            }
-          }`,
-        {},
-      );
-      
-      delete data.rateLimit;
-      moreReplies = [];
-      
-      let repliesCount = 0;
-      for (const [_, comment] of Object.entries(data)) {
-        if (comment.replies.pageInfo.hasNextPage) {
-          moreReplies.push({
-            discussionId: comment.id, // 🚨 rename to id?
-            totalCount: 0, // 🚨 unnecessary
-            first,
-            endCursor: comment.replies.pageInfo.endCursor,
-          });
-        }
-        repliesCount += comment.replies.nodes.length;
-        for (const reply of comment.replies.nodes) {
-          if (reply?.author) {
-            yield* entries.send({
-              type: "reply",
-              bodyText: reply.bodyText,
-              author: reply.author.login,
-              parentCommentId: comment.id,
-              discussionNumber: reply.discussion.number,
-            });
-          } else {
-            console.log(
-              chalk.gray(`Skipped comment:${comment?.id} because author login is missing.`),
-            );
-          }
-        }
-      }
-      console.log(
-        `Retrieved ${chalk.blue(repliesCount, repliesCount > 1 ? "replies" : "reply")} from batch query`,
-      );
-    } while (moreReplies.length > 0);
+  const results = yield* cache.find<Comment>("discussions/*/*");
+  for (const result of yield* each(results)) {
+    console.log("loggint out results")
+    console.log(result)
+    yield* each.next();
   }
+  // const batches = chunk(comments, batch);
+  // for (const [index, batch] of batches.entries()) {
+  //   let moreReplies: CommentCursor[] = [];
+  //   do {
+  //     console.log(
+  //       `Batch querying for replies of all comments: batch ${chalk.blue(index + 1)} of ${chalk.blue(batches.length)}`,
+  //     );
+  //     for (const file of batch) {
+  //       for (
+  //         const data of yield* each(yield* cache.read<Comment>(file))
+  //       ) {
+  //         moreReplies.push({
+  //           discussionId: data.id, // 🚨 rename to id?
+  //           totalCount: 0, // 🚨 unnecessary
+  //           first,
+  //           endCursor: null,
+  //         });
+  //         yield* each.next();
+  //       }
+  //     }
+  //     const data: BatchQuery = yield* graphql(
+  //       `query BatchedComments {
+  //         ${
+  //           moreReplies.map((item, index) => `
+  //           _${index}: node(id: "${item.discussionId}") {
+  //           ... on Comment {
+  //             id
+  //             replies(first: ${item.first}, after: "${item.endCursor}") {
+  //               totalCount
+  //               pageInfo {
+  //                 hasNextPage
+  //                 endCursor
+  //               }
+  //               nodes {
+  //                 id
+  //                 bodyText
+  //                 author {
+  //                   login
+  //                 }
+  //                 discussion {
+  //                   number
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       `).join("\n")
+  //         }
+  //           rateLimit {
+  //             cost
+  //             remaining
+  //             nodeCount
+  //           }
+  //         }`,
+  //       {},
+  //     );
+      
+  //     delete data.rateLimit;
+  //     moreReplies = [];
+      
+  //     let repliesCount = 0;
+  //     for (const [_, comment] of Object.entries(data)) {
+  //       if (comment.replies.pageInfo.hasNextPage) {
+  //         moreReplies.push({
+  //           discussionId: comment.id, // 🚨 rename to id?
+  //           totalCount: 0, // 🚨 unnecessary
+  //           first,
+  //           endCursor: comment.replies.pageInfo.endCursor,
+  //         });
+  //       }
+  //       repliesCount += comment.replies.nodes.length;
+  //       for (const reply of comment.replies.nodes) {
+  //         if (reply?.author) {
+  //           yield* entries.send({
+  //             type: "reply",
+  //             bodyText: reply.bodyText,
+  //             author: reply.author.login,
+  //             parentCommentId: comment.id,
+  //             discussionNumber: reply.discussion.number,
+  //           });
+  //         } else {
+  //           console.log(
+  //             chalk.gray(`Skipped comment:${comment?.id} because author login is missing.`),
+  //           );
+  //         }
+  //       }
+  //     }
+  //     console.log(
+  //       `Retrieved ${chalk.blue(repliesCount, repliesCount > 1 ? "replies" : "reply")} from batch query`,
+  //     );
+  //   } while (moreReplies.length > 0);
+  // }
 }
 
 interface RateLimit {
