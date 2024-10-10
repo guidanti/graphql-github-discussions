@@ -25,6 +25,12 @@ export interface Reply {
   discussionNumber: number;
 }
 
+export interface Cursor {
+  id: string;
+  first: number;
+  endCursor: CURSOR_VALUE;
+}
+
 /**
  * Start: undefined
  * Middle: string

@@ -3,15 +3,8 @@ import type { Operation } from "npm:effection@3.0.3";
 import type { DiscussionsQuery } from "../__generated__/types.ts";
 import { useEntries } from "../lib/useEntries.ts";
 import { useGraphQL } from "../lib/useGraphQL.ts";
-import type { CURSOR_VALUE } from "../types.ts";
+import type { Cursor, CURSOR_VALUE } from "../types.ts";
 import chalk from "npm:chalk@5.3.0";
-
-export interface CommentCursor {
-  discussionId: string;
-  totalCount: number;
-  first: number;
-  endCursor: CURSOR_VALUE;
-}
 
 interface fetchDiscussionOptions {
   org: string;
@@ -23,11 +16,11 @@ export function* fetchDiscussions({
   org,
   repo,
   first = 100,
-}: fetchDiscussionOptions): Operation<CommentCursor[]> {
+}: fetchDiscussionOptions): Operation<Cursor[]> {
   const entries = yield* useEntries();
   const graphql = yield* useGraphQL();
 
-  const incompleteComments: CommentCursor[] = [];
+  const incompleteComments: Cursor[] = [];
   let hasNextPage: boolean;
   let after: CURSOR_VALUE = undefined;
 
@@ -79,9 +72,8 @@ export function* fetchDiscussions({
         }
         if (discussion.comments.pageInfo.hasNextPage) {
           incompleteComments.push({
-            discussionId: discussion.id,
+            id: discussion.id,
             first,
-            totalCount: discussion.comments.totalCount,
             endCursor: discussion.comments.pageInfo.endCursor,
           });
         }

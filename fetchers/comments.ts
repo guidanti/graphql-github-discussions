@@ -1,11 +1,11 @@
 import { type Operation } from "npm:effection@3.0.3";
 import { useGraphQL } from "../lib/useGraphQL.ts";
 import { useEntries } from "../lib/useEntries.ts";
-import { CommentCursor } from "./discussion.ts";
+import { Cursor } from "../types.ts";
 import chalk from "npm:chalk@5.3.0";
 
 interface fetchCommentsOptions {
-  incompleteComments: CommentCursor[];
+  incompleteComments: Cursor[];
   first?: number;
 }
 
@@ -16,17 +16,17 @@ export function* fetchComments({
   const entries = yield* useEntries();
   const graphql = yield* useGraphQL();
 
-  let cursors: CommentCursor[] = incompleteComments;
+  let cursors: Cursor[] = incompleteComments;
 
   do {
     console.log(
       `Batch querying ${chalk.blue(cursors.length, cursors.length > 1 ? "discussions" : "discussion")} for additional comments`,
     );
-    const data: BatchQuery = yield* graphql(
+    const data: DiscussionsBatchQuery = yield* graphql(
       `query BatchedComments {
         ${
         cursors.map((item, index) => `
-        _${index}: node(id: "${item.discussionId}") {
+        _${index}: node(id: "${item.id}") {
         ... on Discussion {
           id
           comments(first: ${item.first}, after: "${item.endCursor}") {
@@ -66,9 +66,8 @@ export function* fetchComments({
     for (const [_, discussion] of Object.entries(data)) {
       if (discussion.comments.pageInfo.hasNextPage) {
         cursors.push({
-          discussionId: discussion.id,
+          id: discussion.id,
           first,
-          totalCount: discussion.comments.totalCount,
           endCursor: discussion.comments.pageInfo.endCursor,
         });
       }
@@ -101,7 +100,7 @@ interface RateLimit {
   nodeCount: number;
 } // 🚨
 
-type BatchQuery = {
+type DiscussionsBatchQuery = {
   [key: string]: {
     id: string;
     comments: {
