@@ -29,6 +29,7 @@ await main(function* () {
     cost: 0,
     remaining: 0,
     nodeCount: 0,
+    queryCount: 0,
   };
 
   yield* spawn(function* () {
@@ -37,8 +38,8 @@ await main(function* () {
         cost: totalCost.cost + item.cost,
         remaining: item.remaining,
         nodeCount: totalCost.nodeCount + item.nodeCount,
+        queryCount: totalCost.queryCount + 1,
       }
-      logger.dir(totalCost);
       yield* each.next();
     }
 
@@ -79,21 +80,24 @@ await main(function* () {
     }
   });
 
-  const incompleteComments: Cursor[] = yield* fetchDiscussions({
-    org: "vercel",
-    repo: "next.js",
-    first: 75,
-  });
+  try {
+    const incompleteComments: Cursor[] = yield* fetchDiscussions({
+      org: "vercel",
+      repo: "next.js",
+      first: 75,
+    });
+  
+    yield* fetchComments({ 
+      incompleteComments,
+      first: 100, 
+    });
+  
+    yield* fetchReplies({
+      first: 100
+    });
 
-  yield* fetchComments({ 
-    incompleteComments,
-    first: 100, 
-  });
-
-  yield* fetchReplies({
-    first: 100
-  });
-
-  logger.log("Done ✅");
-  logger.dir(totalCost);
+    logger.log("Done ✅");
+  } finally {
+    logger.dir(totalCost);
+  }
 });
