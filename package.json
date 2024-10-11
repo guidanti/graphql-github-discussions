@@ -5,7 +5,6 @@
   "license": "ISC",
   "type": "module",
   "scripts": {
-    "start": "tsx src/index.ts",
     "generate": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
