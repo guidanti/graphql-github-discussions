@@ -8,6 +8,7 @@ import chalk from "npm:chalk@5.3.0";
 import { assert } from "jsr:@std/assert@1.0.3";
 import { initCacheContext, useCache } from "./useCache.ts";
 import { useLogger } from "./useLogger.ts";
+import { useCost } from "./useCost.ts";
 
 type GraphQLQueryFunction = <ResponseData>(
   query: string,
@@ -19,6 +20,7 @@ export const GraphQLContext = createContext<GraphQLQueryFunction>("graphql");
 export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
   const GITHUB_TOKEN = Deno.env.get("GITHUB_TOKEN");
   const logger = yield* useLogger();
+  const cost = yield* useCost();
 
   assert(
     GITHUB_TOKEN,
@@ -68,6 +70,14 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
               // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
               `GitHub API Query ${chalk.green("cost", data.rateLimit.cost)} and remaining ${chalk.green(data.rateLimit.remaining)}`,
             );
+            yield* cost.send({
+              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
+              cost: data.rateLimit.cost,
+              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
+              nodeCount: data.rateLimit.nodeCount,
+              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
+              remaining: data.rateLimit.remaining,
+            });
           }
 
           yield* cache.write(key, data);

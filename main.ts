@@ -9,16 +9,34 @@ import { Cursor } from "./types.ts";
 import { initLoggerContext } from "./lib/useLogger.ts";
 import { md5 } from "jsr:@takker/md5@0.1.0";
 import { encodeHex } from "jsr:@std/encoding@1";
+import { initCostContext } from "./lib/useCost.ts";
 
 await main(function* () {
   const logger = yield* initLoggerContext(console);
+  const cost = yield* initCostContext();
   const cache = yield* initCacheContext({
     location: new URL(`./.cache/`, import.meta.url),
   });
   yield* initGraphQLContext();
   const entries = yield* initEntriesContext();
 
+  let totalCost = {
+    cost: 0,
+    remaining: 0,
+    nodeCount: 0,
+  };
+
   yield* spawn(function* () {
+    for (const item of yield* each(cost)) {
+      totalCost = {
+        cost: totalCost.cost + item.cost,
+        remaining: item.remaining,
+        nodeCount: totalCost.nodeCount + item.nodeCount,
+      }
+      logger.dir(totalCost);
+      yield* each.next();
+    }
+
     for (const item of yield* each(entries)) {
       switch (item.type) {
         case "discussion": {
@@ -67,4 +85,5 @@ await main(function* () {
   yield* fetchReplies();
 
   logger.log("Done ✅");
+  logger.dir(totalCost);
 });
