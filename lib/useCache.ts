@@ -2,7 +2,6 @@ import {
   call,
   createContext,
   createQueue,
-  each,
   type Operation,
   spawn,
   type Stream,
@@ -27,24 +26,24 @@ interface InitCacheContextOptions {
 }
 
 export function* initCacheContext(options: InitCacheContextOptions) {
-  const cache: Cache = createCache(options);
-
-  return yield* CacheContext.set(cache);
+  return yield* CacheContext.set(new PersistantCache(options.location));
 }
 
 export function* useCache(): Operation<Cache> {
   return yield* CacheContext;
 }
 
-function createCache(options: InitCacheContextOptions): Cache {
-  function* has(key: string) {
-    const location = new URL(`./${key}.jsonl`, options.location);
+class PersistantCache implements Cache {
+  constructor(public location: URL) {}
+
+  *has(key: string) {
+    const location = new URL(`./${key}.jsonl`, this.location);
 
     return yield* call(() => exists(location));
   }
 
-  function* read<T>(key: string) {
-    const location = new URL(`./${key}.jsonl`, options.location);
+  *read<T>(key: string) {
+    const location = new URL(`./${key}.jsonl`, this.location);
     const file = yield* call(() => Deno.open(location, { read: true }));
 
     const lines = file
@@ -55,8 +54,8 @@ function createCache(options: InitCacheContextOptions): Cache {
     return stream(lines as ReadableStream<T>);
   }
 
-  function* write(key: string, data: unknown): Operation<void> {
-    const location = new URL(`./${key}.jsonl`, options.location);
+  *write(key: string, data: unknown) {
+    const location = new URL(`./${key}.jsonl`, this.location);
     yield* call(() => ensureFile(location));
 
     const file = yield* call(() =>
@@ -74,14 +73,14 @@ function createCache(options: InitCacheContextOptions): Cache {
     }
   }
 
-  function* find<T>(glob: string): Stream<T, void> {
+  *find<T>(glob: string) {
     const queue = createQueue<T, void>();
 
-    const reg = globToRegExp(`${options.location.pathname}/${glob}`, {
+    const reg = globToRegExp(`${this.location.pathname}/${glob}`, {
       globstar: true,
     });
 
-    const files = walkSync(options.location, {
+    const files = walkSync(this.location, {
       includeDirs: false,
       includeFiles: true,
       match: [
@@ -89,10 +88,13 @@ function createCache(options: InitCacheContextOptions): Cache {
       ],
     });
 
+    const { location } = this;
+    const read = this.read.bind(this);
+
     yield* spawn(function* () {
       for (const file of files) {
         const key = join(
-          dirname(file.path.replace(options.location.pathname, "")),
+          dirname(file.path.replace(location.pathname, "")),
           basename(file.name, ".jsonl"),
         );
         const items = yield* read<T>(key);
@@ -110,12 +112,4 @@ function createCache(options: InitCacheContextOptions): Cache {
 
     return queue;
   }
-
-  return {
-    location: options.location,
-    write,
-    read,
-    has,
-    find,
-  };
 }
