@@ -1,4 +1,11 @@
-import { call, createContext, each, type Operation } from "npm:effection@3.0.3";
+import {
+  call,
+  createContext,
+  each,
+  type Operation,
+  sleep,
+  race,
+} from "npm:effection@3.0.3";
 import { graphql } from "npm:@octokit/graphql@4.8.0";
 import { RequestParameters } from "npm:@octokit/types@13.6.1";
 import { md5 } from "jsr:@takker/md5@0.1.0";
@@ -16,6 +23,32 @@ type GraphQLQueryFunction = <ResponseData>(
 ) => Operation<ResponseData>;
 
 export const GraphQLContext = createContext<GraphQLQueryFunction>("graphql");
+
+function* retryWithBackoff<T>(fn: () => Operation<T>, options: { timeout: number }) {
+  function* body() {
+    let attempt = -1;
+
+    while (true) {
+      try {
+        return yield* fn();
+      } catch {
+        let delayMs: number;
+        
+        // https://aws.amazon.com/ru/blogs/architecture/exponential-backoff-and-jitter/
+        const backoff = Math.pow(2, attempt) * 1000;
+        delayMs = Math.round((backoff * (1 + Math.random())) / 2);
+
+        yield* sleep(delayMs);
+        attempt++;
+      }
+    }
+  }
+
+  yield* race([
+    body(),
+    sleep(options.timeout)
+  ]);
+}
 
 export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
   const GITHUB_TOKEN = Deno.env.get("GITHUB_TOKEN");
@@ -60,9 +93,14 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
           logger.error(`This could happen if cached document had no records.`);
           return null as ResponseData;
         } else {
-          const data = yield* call(() =>
-            client<ResponseData>(query, parameters)
-          );
+          const data = yield* retryWithBackoff(function* () {
+            yield* call(() =>
+              client<ResponseData>(query, parameters)
+            );
+          }, {
+            timeout: 30_000,
+          });
+          logger.log("🟢", data)
 
           // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
           if (data?.rateLimit) {
