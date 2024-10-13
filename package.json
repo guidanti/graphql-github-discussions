@@ -8,6 +8,7 @@
     "generate": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
+    "@changesets/cli": "^2.27.9",
     "@graphql-codegen/cli": "^4.0.0",
     "@graphql-codegen/near-operation-file-preset": "^2.4.1",
     "@graphql-codegen/typescript": "^4.0.0",
@@ -15,8 +16,8 @@
     "@graphql-codegen/typescript-operations": "^2.5.3",
     "@octokit/graphql": "^4.8.0",
     "@octokit/graphql-schema": "^11.1.0",
-    "effection": "3.0.3",
     "@types/node": "^22.7.4",
+    "effection": "3.0.3",
     "lodash": "^4.17.21",
     "tsx": "^4.19.1",
     "typescript": "^5.6.2"
