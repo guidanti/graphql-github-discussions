@@ -10,6 +10,7 @@ import { initLoggerContext } from "./lib/useLogger.ts";
 import { md5 } from "jsr:@takker/md5@0.1.0";
 import { encodeHex } from "jsr:@std/encoding@1";
 import { initRetryWithBackoff } from "./lib/useRetryWithBackoff.ts";
+import { stitch } from "./lib/stitch.ts";
 
 await main(function* () {
   yield* initRetryWithBackoff();
@@ -75,6 +76,8 @@ await main(function* () {
   yield* fetchReplies({
     first: 100
   });
+
+  yield* stitch();
 
   logger.log("Done ✅");
 });

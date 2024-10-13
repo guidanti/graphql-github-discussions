@@ -1,46 +1,37 @@
-import { useCache } from "./lib/useCache.ts";
-
-/*
-.
-└── .cache
-    └── discussions
-      ├── 111
-      |  ├── 111-aaa
-      |  |  ├── 111-aaa-reply-1.jsonl
-      |  |  └── 111-aaa-reply-2.jsonl
-      |  |── 222-bbb
-      |  |  └── 222-aaa-reply-1.jsonl
-      |  ├── 111-aaa.jsonl
-      |  └── 111-bbb.jsonl
-      ├── 222
-      |  |── 222-aaa
-      |  |  ├── 222-aaa-reply-1.jsonl
-      |  |  └── 222-aaa-reply-2.jsonl
-      |  |── 222-bbb
-      |  |  └── 222-aaa-reply-1.jsonl
-      |  ├── 222-aaa.jsonl
-      |  └── 222-bbb.jsonl
-      ├── 111.jsonl
-      └── 222.jsonl
-*/
+import { Comment } from "../types.ts";
+import { Reply } from "../types.ts";
+import { Discussion } from "../types.ts";
+import { useCache } from "./useCache.ts";
+import { md5 } from "jsr:@takker/md5@0.1.0";
+import { encodeHex } from "jsr:@std/encoding@1";
 
 export function* stitch() {
   const cache = yield* useCache();
-  for (const discussion of yield* cache.find("discussions/*")) {
+  const discussionSubscription = yield* cache.find<Discussion>("discussions/*");
+  let nextDiscussion = yield* discussionSubscription.next();
+  while (!nextDiscussion.done) {
     const comments = [];
-    for (const comment of yield* cache.find("discussions/*/*")) {
+    const commentSubscription = yield* cache.find<Comment>(`discussions/${nextDiscussion.value.number}/*`);
+    let nextComment = yield* commentSubscription.next();
+    while (!nextComment.done) {
       const replies = [];
-      for (const reply of yield* cache.find(`discussions/*/${comment.id}/*`)) {
-        replies.push(reply);
+      const replySubscription = yield* cache.find<Reply>(`discussions/${nextDiscussion.value.number}/${encodeHex(md5(nextComment.value.id))}`);
+      let nextReply = yield* replySubscription.next();
+      while (!nextReply.done) {
+        replies.push(nextReply.value);
+        nextReply = yield* replySubscription.next();
       }
       comments.push({
-        ...comment,
+        ...nextComment.value,
         replies,
-      })
+      });
+      nextComment = yield* commentSubscription.next();
     }
-    yield* {
-      ...discussion,
+    const discussion = {
+      ...nextDiscussion.value,
       comments,
-    }
+    };
+    console.log(discussion);
+    nextDiscussion = yield* discussionSubscription.next();
   }
 }
