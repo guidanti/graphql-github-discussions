@@ -1,7 +1,7 @@
 {
-  "name": "graphql-github-discussions",
+  "name": "github-discussions-fetcher",
   "version": "1.0.0",
-  "main": "index.js",
+  "author": "Min Kim <min@guidanti.com>",
   "license": "ISC",
   "type": "module",
   "scripts": {
@@ -17,9 +17,6 @@
     "@octokit/graphql": "^4.8.0",
     "@octokit/graphql-schema": "^11.1.0",
     "@types/node": "^22.7.4",
-    "effection": "3.0.3",
-    "lodash": "^4.17.21",
-    "tsx": "^4.19.1",
     "typescript": "^5.6.2"
   }
 }
