@@ -15,11 +15,9 @@ import { useLogger } from "../lib/useLogger.ts";
  * with remaining replies.
  */
 export function* fetchReplies({
-  first,
-  batchSize,
+  first
 }: {
   first: number;
-  batchSize: number;
 }): Operation<void> {
   const cache = yield* useCache();
 
@@ -34,7 +32,7 @@ export function* fetchReplies({
       first,
       endCursor: undefined,
     });
-    if (cursors.length >= batchSize) {
+    if (cursors.length >= first) {
       cursors = yield* fetchReplyCursors({ cursors, first });
     }
     next = yield* subscription.next();

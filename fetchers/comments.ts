@@ -7,7 +7,7 @@ import { useLogger } from "../lib/useLogger.ts";
 
 interface fetchCommentsOptions {
   incompleteComments: Cursor[];
-  first?: number;
+  first: number;
 }
 
 export function* fetchComments({

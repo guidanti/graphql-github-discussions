@@ -9,13 +9,18 @@ import { Cursor } from "./types.ts";
 import { initLoggerContext } from "./lib/useLogger.ts";
 import { md5 } from "jsr:@takker/md5@0.1.0";
 import { encodeHex } from "jsr:@std/encoding@1";
+import { initRetryWithBackoff } from "./lib/useRetryWithBackoff.ts";
 
 await main(function* () {
+  yield* initRetryWithBackoff();
+
   const logger = yield* initLoggerContext(console);
   const cache = yield* initCacheContext({
     location: new URL(`./.cache/`, import.meta.url),
   });
+
   yield* initGraphQLContext();
+
   const entries = yield* initEntriesContext();
 
   yield* spawn(function* () {
@@ -59,7 +64,7 @@ await main(function* () {
   const incompleteComments: Cursor[] = yield* fetchDiscussions({
     org: "vercel",
     repo: "next.js",
-    first: 50,
+    first: 75,
   });
 
   yield* fetchComments({ 
@@ -68,8 +73,7 @@ await main(function* () {
   });
 
   yield* fetchReplies({
-    first: 100,
-    batchSize: 100
+    first: 100
   });
 
   logger.log("Done ✅");
