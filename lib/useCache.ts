@@ -8,8 +8,9 @@ import {
   stream,
 } from "npm:effection@3.0.3";
 import { ensureFile, exists, walkSync } from "jsr:@std/fs@1.0.4";
-import { JSONLinesParseStream } from "https://deno.land/x/jsonlines@v1.2.1/mod.ts";
 import { basename, dirname, globToRegExp, join } from "jsr:@std/path@1.0.6";
+
+import { JSONLinesParseStream } from './jsonlines/parser.ts';
 
 interface Cache {
   location: URL;

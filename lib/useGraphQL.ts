@@ -4,10 +4,13 @@ import { RequestParameters } from "npm:@octokit/types@13.6.1";
 import { md5 } from "jsr:@takker/md5@0.1.0";
 import { encodeHex } from "jsr:@std/encoding@1";
 import chalk from "npm:chalk@5.3.0";
+import { getOperationName } from "npm:@apollo/client/utilities/index.js";
+import { parse } from "npm:graphql@16.8.2";
 
 import { assert } from "jsr:@std/assert@1.0.3";
 import { initCacheContext, useCache } from "./useCache.ts";
 import { useLogger } from "./useLogger.ts";
+import { GraphqlResponseError } from "npm:@octokit/graphql@^4.8.0";
 
 type GraphQLQueryFunction = <ResponseData>(
   query: string,
@@ -44,10 +47,10 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
       return function* query<ResponseData>(
         query: string,
         parameters: RequestParameters = {},
-        ): Operation<ResponseData> {
-          const key = `${encodeHex(md5(query))}-${
-            Object.keys(parameters).map((p) => `${p}:${parameters[p]}`).join("-")
-          }`;
+      ): Operation<ResponseData> {
+        const key = `${encodeHex(md5(query))}-${
+          Object.keys(parameters).map((p) => `${p}:${parameters[p]}`).join("-")
+        }`;
 
         if (yield* cache.has(key)) {
           for (
@@ -59,17 +62,33 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
           return null as ResponseData;
         } else {
           const data = yield* call(() =>
-            client<ResponseData>(query, parameters)
+            client<ResponseData>(query, parameters).catch((e) => {
+              if (isGraphqlResponseError<ResponseData>(e)) {
+                for (const error of e.errors ?? []) {
+                  logger.error(
+                    `${getOperationName(parse(query))} with ${
+                      JSON.stringify(parameters)
+                    } encountered an error ${JSON.stringify(error)}`,
+                  );
+                }
+                return e.data;
+              }
+              throw e;
+            })
           );
 
-          // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
+          // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.
           if (data?.rateLimit) {
             logger.info(
-              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
-              `GitHub API Query ${chalk.green("cost", data.rateLimit.cost)} and remaining ${chalk.green(data.rateLimit.remaining)}`,
+              `GitHub API Query ${getOperationName(parse(query))} with ${JSON
+                  .stringify(parameters)
+              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.
+              } ${chalk.green("cost", data.rateLimit.cost)} and remaining ${
+              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.          
+              chalk.green(data.rateLimit.remaining)}`,
             );
           }
-
+          
           yield* cache.write(key, data);
           return data;
         }
@@ -80,4 +99,10 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
 
 export function* useGraphQL(): Operation<GraphQLQueryFunction> {
   return yield* GraphQLContext;
+}
+
+function isGraphqlResponseError<ResponseData>(
+  error: any,
+): error is GraphqlResponseError<ResponseData> {
+  return error.name === "GraphqlResponseError";
 }
