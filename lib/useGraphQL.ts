@@ -1,4 +1,10 @@
-import { call, createContext, each, type Operation } from "npm:effection@3.0.3";
+import {
+  call,
+  createContext,
+  each,
+  type Operation,
+  useAbortSignal,
+} from "npm:effection@3.0.3";
 import { graphql } from "npm:@octokit/graphql@4.8.0";
 import { RequestParameters } from "npm:@octokit/types@13.6.1";
 import { md5 } from "jsr:@takker/md5@0.1.0";
@@ -11,6 +17,9 @@ import { assert } from "jsr:@std/assert@1.0.3";
 import { initCacheContext, useCache } from "./useCache.ts";
 import { useLogger } from "./useLogger.ts";
 import { GraphqlResponseError } from "npm:@octokit/graphql@^4.8.0";
+import pRetry from "npm:p-retry@6.2.0";
+import { delay } from "npm:abort-controller-x@0.4.3";
+import { isErrorResponse } from "jsr:@udibo/http-error@0.8.2";
 
 type GraphQLQueryFunction = <ResponseData>(
   query: string,
@@ -61,19 +70,39 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
           logger.error(`This could happen if cached document had no records.`);
           return null as ResponseData;
         } else {
-          const data = yield* call(() =>
-            client<ResponseData>(query, parameters).catch((e) => {
-              if (isGraphqlResponseError<ResponseData>(e)) {
-                for (const error of e.errors ?? []) {
-                  logger.error(
-                    `${getOperationName(parse(query))} with ${
-                      JSON.stringify(parameters)
-                    } encountered an error ${JSON.stringify(error)}`,
-                  );
+          const signal = yield* useAbortSignal();
+          let data = yield* call(() =>
+            pRetry(() =>
+              client<ResponseData>(query, parameters).catch((e) => {
+                if (isGraphqlResponseError<ResponseData>(e)) {
+                  for (const error of e.errors ?? []) {
+                    logger.error(
+                      `${getOperationName(parse(query))} with ${
+                        JSON.stringify(parameters)
+                      } encountered an error ${JSON.stringify(error)}`,
+                    );
+                  }
+                  return e.data;
                 }
-                return e.data;
-              }
-              throw e;
+                throw e
+              }), {
+              signal,
+              onFailedAttempt: async (e: any) => {
+                if (isErrorResponse(e)) {
+                  if (
+                    e.error.name?.includes(
+                      "You have exceeded a secondary rate limit.",
+                    )
+                  ) {
+                    logger.log(
+                      `Encountered secondary rate limit, waiting two minutes.`,
+                    );
+                    await delay(signal, 2000);
+                    logger.log(`Resuming attempts to fetch data`);
+                  }
+                }
+                logger.log(`Encountered error and will retry ${e}`);
+              },
             })
           );
 
@@ -82,13 +111,15 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
             logger.info(
               `GitHub API Query ${getOperationName(parse(query))} with ${JSON
                   .stringify(parameters)
-              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.
+                // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.
               } ${chalk.green("cost", data.rateLimit.cost)} and remaining ${
-              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.          
-              chalk.green(data.rateLimit.remaining)}`,
+                // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.
+                chalk.green(data.rateLimit.remaining)}`,
             );
           }
-          
+
+          assert(data, `Could not fetch data from GitHub API`);
+
           yield* cache.write(key, data);
           return data;
         }
