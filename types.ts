@@ -17,12 +17,18 @@ export interface Discussion {
   category: string;
 }
 
-export interface DiscussionCursor {
-  type: "discussion-cursor";
-  totalCount: number;
-  after: CURSOR_VALUE;
+export interface Reply {
+  type: "reply";
+  id: string;
+  bodyText: string;
+  author: string;
+  parentCommentId: string;
+  discussionNumber: number;
+}
+
+export interface Cursor {
+  id: string;
   first: number;
-  hasNextPage: boolean;
   endCursor: CURSOR_VALUE;
 }
 
@@ -36,4 +42,4 @@ export type CURSOR_VALUE = string | null | undefined;
 export type DiscussionEntries =
   | Comment
   | Discussion
-  | DiscussionCursor;
+  | Reply;

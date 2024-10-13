@@ -3,31 +3,26 @@ import type { Operation } from "npm:effection@3.0.3";
 import type { DiscussionsQuery } from "../__generated__/types.ts";
 import { useEntries } from "../lib/useEntries.ts";
 import { useGraphQL } from "../lib/useGraphQL.ts";
-import type { CURSOR_VALUE } from "../types.ts";
+import type { Cursor, CURSOR_VALUE } from "../types.ts";
 import chalk from "npm:chalk@5.3.0";
-
-export interface CommentCursor {
-  discussionId: string;
-  totalCount: number;
-  first: number;
-  endCursor: CURSOR_VALUE;
-}
+import { useLogger } from "../lib/useLogger.ts";
 
 interface fetchDiscussionOptions {
   org: string;
   repo: string;
-  first?: number;
+  first: number;
 }
 
 export function* fetchDiscussions({
   org,
   repo,
-  first = 100,
-}: fetchDiscussionOptions): Operation<CommentCursor[]> {
+  first,
+}: fetchDiscussionOptions): Operation<Cursor[]> {
   const entries = yield* useEntries();
   const graphql = yield* useGraphQL();
+  const logger = yield* useLogger();
 
-  const incompleteComments: CommentCursor[] = [];
+  const incompleteComments: Cursor[] = [];
   let hasNextPage: boolean;
   let after: CURSOR_VALUE = undefined;
 
@@ -53,7 +48,7 @@ export function* fetchDiscussions({
 
     assert(data.repository, `Could not fetch ${org}/${repo}`);
 
-    console.log(
+    logger.log(
       `Fetched ${chalk.blue(progress += data.repository.discussions.nodes?.length ??
         0)} of ${chalk.blue(data.repository.discussions.totalCount)} discussions for ${
         JSON.stringify(parameters)
@@ -73,15 +68,14 @@ export function* fetchDiscussions({
             category: discussion.category.name,
           });
         } else {
-          console.log(
+          logger.log(
             chalk.gray(`Skipped discussion:${discussion.number} because author login is missing.`),
           );
         }
         if (discussion.comments.pageInfo.hasNextPage) {
           incompleteComments.push({
-            discussionId: discussion.id,
+            id: discussion.id,
             first,
-            totalCount: discussion.comments.totalCount,
             endCursor: discussion.comments.pageInfo.endCursor,
           });
         }
@@ -95,13 +89,13 @@ export function* fetchDiscussions({
               discussionNumber: discussion.number,
             });
           } else {
-            console.log(
+            logger.log(
               chalk.gray(`Skipped comment:${comment?.id} because author login is missing.`),
             );
           }
         }
       } else {
-        console.log(`Received ${discussion} in ${after} of ${org}/${repo}`);
+        logger.log(`Received ${discussion} in ${after} of ${org}/${repo}`);
       }
     }
     hasNextPage = !!data.repository.discussions.pageInfo.hasNextPage;
