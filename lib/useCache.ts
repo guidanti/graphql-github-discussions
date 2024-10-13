@@ -18,6 +18,7 @@ interface Cache {
   read<T>(key: string): Operation<Stream<T, unknown>>;
   has(key: string): Operation<boolean>;
   find<T>(directory: string): Stream<T, unknown>;
+  clear(): Operation<void>;
 }
 
 export const CacheContext = createContext<Cache>("cache");
@@ -112,5 +113,11 @@ class PersistantCache implements Cache {
     });
 
     return queue;
+  }
+
+  *clear() {
+    yield* call(() => {
+      Deno.remove(this.location, { recursive: true });
+    });
   }
 }

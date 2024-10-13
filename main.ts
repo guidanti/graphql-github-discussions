@@ -90,6 +90,10 @@ await main(function* () {
   logger.dir(cost.summary());
 
   yield* stitch();
+
+  if (!Deno.args.includes("local")) {
+    yield* cache.clear();
+  }
   
   logger.log("Done ✅");
 });
