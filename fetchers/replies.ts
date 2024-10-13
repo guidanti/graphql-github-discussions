@@ -1,4 +1,4 @@
-import { each, type Operation } from "npm:effection@3.0.3";
+import { call, each, type Operation } from "npm:effection@3.0.3";
 import { useGraphQL } from "../lib/useGraphQL.ts";
 import { useCache } from "../lib/useCache.ts";
 import { useEntries } from "../lib/useEntries.ts";
@@ -8,25 +8,28 @@ import { useLogger } from "../lib/useLogger.ts";
 
 export function* fetchReplies({
   first = 50,
-  batch = 50,
+  batchSize = 50,
 }: {
   first?: number;
-  batch?: number;
+  batchSize?: number;
 } = {}): Operation<void> {
   const cache = yield* useCache();
   const entries = yield* useEntries();
   const graphql = yield* useGraphQL();
   const logger = yield* useLogger();
 
-  const results = yield* cache.find<Comment>("discussions/*/*");
   let cursors: Cursor[] = [];
-  for (const result of yield* each(results)) {
+  const subscription = yield* cache.find<Comment>("discussions/*/*");
+
+  let next = yield* subscription.next();
+  while (!next.done) {
+    const result = next.value;
     cursors.push({
       id: result.id,
       first,
       endCursor: null,
     });
-    if (cursors.length === batch) {
+    if (cursors.length === batchSize) {
       let repliesCount = 0;
       do {
         const data: CommentsBatchQuery = yield* graphql(
@@ -66,7 +69,7 @@ export function* fetchReplies({
           {},
         );
 
-        delete data.rateLimit;;
+        delete data.rateLimit;
         cursors = [];
 
         for (const [_, comment] of Object.entries(data)) {
@@ -86,10 +89,12 @@ export function* fetchReplies({
                 author: reply.author.login,
                 parentCommentId: comment.id,
                 discussionNumber: reply.discussion.number,
-              })
+              });
             } else {
               logger.log(
-                chalk.gray(`Skipped comment:${comment?.id} because author login is missing.`),
+                chalk.gray(
+                  `Skipped comment:${comment?.id} because author login is missing.`,
+                ),
               );
             }
           }
@@ -97,10 +102,12 @@ export function* fetchReplies({
         }
       } while (cursors.length);
       logger.log(
-        `Retrieved ${chalk.blue(repliesCount, repliesCount > 1 ? "replies" : "reply")} from batch query`,
+        `Retrieved ${
+          chalk.blue(repliesCount, repliesCount > 1 ? "replies" : "reply")
+        } from batch query`,
       );
     }
-    yield* each.next();
+    next = yield* subscription.next();
   }
 }
 
