@@ -24,11 +24,11 @@ export function* fetchReplies({
 
   let next = yield* subscription.next();
   while (!next.done) {
-    const result = next.value;
+    const comment = next.value;
     cursors.push({
-      id: result.id,
+      id: comment.id,
       first,
-      endCursor: null,
+      endCursor: undefined,
     });
     if (cursors.length === batchSize) {
       let repliesCount = 0;
@@ -38,9 +38,9 @@ export function* fetchReplies({
             ${
             cursors.map((item, index) => `
             _${index}: node(id: "${item.id}") {
-            ... on Comment {
+            ... on DiscussionComment {
               id
-              replies(first: ${item.first}, after: "${item.endCursor}") {
+              replies(first: ${item.first}${item.endCursor !== undefined ? `, after: "${item.endCursor}"` : ""}) {
                 totalCount
                 pageInfo {
                   hasNextPage
