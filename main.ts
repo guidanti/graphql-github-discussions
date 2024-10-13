@@ -62,9 +62,15 @@ await main(function* () {
     first: 50,
   });
 
-  yield* fetchComments({ incompleteComments });
+  yield* fetchComments({ 
+    incompleteComments,
+    first: 100, 
+  });
 
-  yield* fetchReplies();
+  yield* fetchReplies({
+    first: 100,
+    batchSize: 100
+  });
 
   logger.log("Done ✅");
 });

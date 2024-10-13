@@ -12,7 +12,7 @@ interface fetchCommentsOptions {
 
 export function* fetchComments({
   incompleteComments,
-  first = 50,
+  first,
 }: fetchCommentsOptions): Operation<void> {
   const entries = yield* useEntries();
   const graphql = yield* useGraphQL();

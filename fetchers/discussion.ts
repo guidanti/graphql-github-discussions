@@ -10,13 +10,13 @@ import { useLogger } from "../lib/useLogger.ts";
 interface fetchDiscussionOptions {
   org: string;
   repo: string;
-  first?: number;
+  first: number;
 }
 
 export function* fetchDiscussions({
   org,
   repo,
-  first = 100,
+  first,
 }: fetchDiscussionOptions): Operation<Cursor[]> {
   const entries = yield* useEntries();
   const graphql = yield* useGraphQL();

@@ -10,17 +10,17 @@ import { useLogger } from "../lib/useLogger.ts";
  * This function fetches all of the replies for existing comments by fetching replies for each comment.
  * Reply queries are batched into batches of a specific size. It batches comment and reply cursors in
  * the same batch query. In other words, it'll attempt to first create a batch that fetches replies for
- * first ${batchSize} comments, then retrieve cursors for comments that have more than ${batchSize} replies and 
+ * first ${batchSize} comments, then retrieve cursors for comments that have more than ${batchSize} replies and
  * combine the cursor with the next set of comments cursors. It'll repeat this until there are not commments
  * with remaining replies.
  */
 export function* fetchReplies({
-  first = 50,
-  batchSize = 50,
+  first,
+  batchSize,
 }: {
-  first?: number;
-  batchSize?: number;
-} = {}): Operation<void> {
+  first: number;
+  batchSize: number;
+}): Operation<void> {
   const cache = yield* useCache();
 
   let cursors: Cursor[] = [];
@@ -39,10 +39,10 @@ export function* fetchReplies({
     }
     next = yield* subscription.next();
   }
-  // fetched remaining cursors (assume it'll be less than 50) 
+  // fetched remaining cursors (assume it'll be less than 50)
   do {
     cursors = yield* fetchReplyCursors({ cursors, first });
-  } while (cursors.length > 0)
+  } while (cursors.length > 0);
 }
 
 interface RateLimit {
