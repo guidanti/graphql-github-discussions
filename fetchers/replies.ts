@@ -1,4 +1,4 @@
-import { each, type Operation } from "npm:effection@3.0.3";
+import { call, each, type Operation } from "npm:effection@3.0.3";
 import { useGraphQL } from "../lib/useGraphQL.ts";
 import { useCache } from "../lib/useCache.ts";
 import { useEntries } from "../lib/useEntries.ts";
@@ -16,19 +16,21 @@ export function* fetchReplies({
 } = {}): Operation<void> {
   const cache = yield* useCache();
 
-  // let subscription = yield* cache.find<Comment>("discussions/*/*");
+  let subscription = yield* cache.find<Comment>("discussions/*/*");
 
-  // let next = yield* subscription.next();
-  // while (!next.done) {
-  //   console.dir(next, { depth: 2 });
-  //   next = yield* subscription.next();
-  // }
-  for (const result of yield* each(cache.find<Comment>("discussions/*/*"))) {
-    console.log("loggint out results")
-    console.log(result)
-    yield* each.next();
+  let next = yield* subscription.next();
+  while (!next.done) {
+    console.dir(next, { depth: 2 });
+    next = yield* subscription.next();
   }
-  console.log("done with the operatin");
+  // for (const result of yield* each(cache.find<Comment>("discussions/*/*"))) {
+  //   yield* call(() => {
+  //     console.log("loggint out results")
+  //     console.log(result)
+  //   });
+  //   yield* each.next();
+  // }
+  // console.log("done with the operatin");
 }
 
 interface RateLimit {
