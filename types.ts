@@ -19,10 +19,17 @@ export interface Discussion {
 
 export interface Reply {
   type: "reply";
+  id: string;
   bodyText: string;
   author: string;
   parentCommentId: string;
   discussionNumber: number;
+}
+
+export interface Cursor {
+  id: string;
+  first: number;
+  endCursor: CURSOR_VALUE;
 }
 
 /**
