@@ -62,20 +62,20 @@ await main(function* () {
     }
   });
 
-  const incompleteComments: Cursor[] = yield* fetchDiscussions({
-    org: "vercel",
-    repo: "next.js",
-    first: 75,
-  });
+  // const incompleteComments: Cursor[] = yield* fetchDiscussions({
+  //   org: "vercel",
+  //   repo: "next.js",
+  //   first: 75,
+  // });
 
-  yield* fetchComments({ 
-    incompleteComments,
-    first: 100, 
-  });
+  // yield* fetchComments({ 
+  //   incompleteComments,
+  //   first: 100, 
+  // });
 
-  yield* fetchReplies({
-    first: 100
-  });
+  // yield* fetchReplies({
+  //   first: 100
+  // });
 
   yield* stitch();
 
