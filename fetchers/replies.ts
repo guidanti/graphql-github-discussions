@@ -1,10 +1,11 @@
-import { call, each, type Operation } from "npm:effection@3.0.3";
+import { type Operation } from "npm:effection@3.0.3";
 import { useGraphQL } from "../lib/useGraphQL.ts";
 import { useCache } from "../lib/useCache.ts";
 import { useEntries } from "../lib/useEntries.ts";
 import { Comment, Cursor } from "../types.ts";
 import chalk from "npm:chalk@5.3.0";
 import { useLogger } from "../lib/useLogger.ts";
+
 
 export function* fetchReplies({
   first = 50,

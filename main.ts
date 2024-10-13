@@ -59,7 +59,7 @@ await main(function* () {
   const incompleteComments: Cursor[] = yield* fetchDiscussions({
     org: "vercel",
     repo: "next.js",
-    first: 10,
+    first: 50,
   });
 
   yield* fetchComments({ incompleteComments });
