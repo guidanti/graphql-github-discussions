@@ -7,7 +7,7 @@ import {
   type Stream,
   stream,
 } from "npm:effection@3.0.3";
-import { ensureFile, exists, walkSync } from "jsr:@std/fs@1.0.4";
+import { ensureFile, exists, walkSync, emptyDir } from "jsr:@std/fs@1.0.4";
 import { basename, dirname, globToRegExp, join } from "jsr:@std/path@1.0.6";
 
 import { JSONLinesParseStream } from './jsonlines/parser.ts';
@@ -117,8 +117,6 @@ class PersistantCache implements Cache {
 
   *clear({ full }: { full: boolean }) {
     const path = full ? this.location : `${this.location.pathname}discussions`;
-    yield* call(() => {
-      Deno.remove(path, { recursive: true });
-    });
+    yield* call(() => emptyDir(path));
   }
 }
