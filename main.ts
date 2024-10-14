@@ -92,7 +92,9 @@ await main(function* () {
   yield* stitch();
 
   if (!Deno.args.includes("local")) {
-    yield* cache.clear();
+    yield* cache.clear({ full: true });
+  } else {
+    yield* cache.clear({ full: false });
   }
   
   logger.log("Done ✅");
