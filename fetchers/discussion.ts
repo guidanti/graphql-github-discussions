@@ -57,6 +57,18 @@ export function* fetchDiscussions({
     for (const discussion of data.repository.discussions.nodes ?? []) {
       if (discussion) {
         if (discussion.author) {
+          const labels = discussion?.labels?.nodes
+            ? discussion.labels.nodes.reduce((acc, label) => {
+              if (label) {
+                if (label.color && label.name) {
+                  return [...acc, {
+                    name: label.name,
+                    color: label.color,
+                  }];
+                }
+              }
+              return acc;
+            }, [] as { name: string, color: string }[]): [];
           yield* entries.send({
             type: "discussion",
             id: discussion.id,
@@ -66,6 +78,7 @@ export function* fetchDiscussions({
             bodyText: discussion.bodyText,
             author: discussion.author.login,
             category: discussion.category.name,
+            labels,
           });
         } else {
           logger.log(
@@ -123,6 +136,12 @@ export const DISCUSSIONS_QUERY = /* GraphQL */ `
           url
           bodyText
           number
+          labels (first: 100) {
+            nodes {
+              name
+              color
+            }
+          }
           author {
             login
           }
