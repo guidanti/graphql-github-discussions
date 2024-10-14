@@ -15,6 +15,10 @@ export interface Discussion {
   bodyText: string;
   author: string;
   category: string;
+  labels: {
+    name: string;
+    color: string;
+  }[];
 }
 
 export interface Reply {
