@@ -12,6 +12,7 @@ import { encodeHex } from "jsr:@std/encoding@1";
 import { initRetryWithBackoff } from "./lib/useRetryWithBackoff.ts";
 import { stitch } from "./lib/stitch.ts";
 import { initCostContext } from "./lib/useCost.ts";
+import { parseArgs } from "jsr:@std/cli@1.0.6/parse-args";
 
 await main(function* () {
   yield* initRetryWithBackoff();
@@ -90,12 +91,6 @@ await main(function* () {
   logger.dir(cost.summary());
 
   yield* stitch();
-
-  if (!Deno.args.includes("local")) {
-    yield* cache.clear({ full: true });
-  } else {
-    yield* cache.clear({ full: false });
-  }
   
   logger.log("Done ✅");
 });

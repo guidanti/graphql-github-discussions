@@ -116,7 +116,10 @@ class PersistantCache implements Cache {
   }
 
   *clear({ full }: { full: boolean }) {
-    const path = full ? this.location : `${this.location.pathname}discussions`;
-    yield* call(() => emptyDir(path));
+    if (full) {
+      yield* call(() => emptyDir(this.location));
+    } else {
+      yield* call(() => emptyDir(new URL(`/discussions/`, this.location)))
+    }
   }
 }
