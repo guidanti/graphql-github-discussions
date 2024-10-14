@@ -72,26 +72,24 @@ await main(function* () {
     }
   });
 
-  try {
-    const incompleteComments: Cursor[] = yield* fetchDiscussions({
-      org: "vercel",
-      repo: "next.js",
-      first: 75,
-    });
-  
-    yield* fetchComments({ 
-      incompleteComments,
-      first: 100, 
-    });
-  
-    yield* fetchReplies({
-      first: 100
-    });
+  const incompleteComments: Cursor[] = yield* fetchDiscussions({
+    org: "vercel",
+    repo: "next.js",
+    first: 75,
+  });
 
-    yield* stitch();
-    
-    logger.log("Done ✅");
-  } finally {
-    logger.dir(cost.summary());
-  }
+  yield* fetchComments({ 
+    incompleteComments,
+    first: 100, 
+  });
+
+  yield* fetchReplies({
+    first: 100
+  });
+
+  logger.dir(cost.summary());
+
+  yield* stitch();
+  
+  logger.log("Done ✅");
 });
