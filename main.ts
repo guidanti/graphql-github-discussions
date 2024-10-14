@@ -25,24 +25,7 @@ await main(function* () {
 
   const entries = yield* initEntriesContext();
 
-  let totalCost = {
-    cost: 0,
-    remaining: 0,
-    nodeCount: 0,
-    queryCount: 0,
-  };
-
   yield* spawn(function* () {
-    for (const item of yield* each(cost)) {
-      totalCost = {
-        cost: totalCost.cost + item.cost,
-        remaining: item.remaining,
-        nodeCount: totalCost.nodeCount + item.nodeCount,
-        queryCount: totalCost.queryCount + 1,
-      }
-      yield* each.next();
-    }
-
     for (const item of yield* each(entries)) {
       switch (item.type) {
         case "discussion": {
@@ -98,6 +81,6 @@ await main(function* () {
 
     logger.log("Done ✅");
   } finally {
-    logger.dir(totalCost);
+    logger.dir(cost.summary());
   }
 });

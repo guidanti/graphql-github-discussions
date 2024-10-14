@@ -84,7 +84,7 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
                 // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.
                 chalk.green(data.rateLimit.remaining)}`,
             );
-            yield* cost.send({
+            cost.update({
               // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
               cost: data.rateLimit.cost,
               // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
