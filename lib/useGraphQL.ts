@@ -80,9 +80,9 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
               `GitHub API Query ${operationName} with ${JSON
                   .stringify(parameters)
                 // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.
-              } ${chalk.green("cost", data.rateLimit.cost)} and remaining ${
+              } ${chalk.green("cost", data.rateLimit.cost)} and ${
                 // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.
-                chalk.green(data.rateLimit.remaining)}`,
+                chalk.green("remaining", data.rateLimit.remaining)}`,
             );
             cost.update({
               // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
