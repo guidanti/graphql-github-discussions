@@ -1,43 +1,68 @@
-import { Comment } from "../types.ts";
-import { Reply } from "../types.ts";
-import { Discussion } from "../types.ts";
+import {
+  DiscussionEntries,
+  Comment,
+  Discussion,
+  Reply,
+} from "../types.ts";
 import { useCache } from "./useCache.ts";
+import { useLogger } from "./useLogger.ts";
+
+interface CommentWithReplies extends Comment {
+  replies?: Reply[];
+}
+
+interface DiscussionResult extends Discussion {
+  comments: CommentWithReplies[];
+}
 
 export function* stitch() {
   const cache = yield* useCache();
+  const logger = yield* useLogger();
   
-  const discussionSubscription = yield* cache.find<Discussion>("discussions/*");
+  const discussionSubscription = yield* cache.find<DiscussionEntries>("discussions/*");
   let nextDiscussion = yield* discussionSubscription.next();
 
+  let current: number | undefined = undefined;
+  let result = {} as DiscussionResult;
+  let discussion = {} as Discussion;
+  let comments = [] as CommentWithReplies[];
+  
   while (!nextDiscussion.done) {
-    const commentSubscription = yield* cache.find<Comment>(`discussions/${nextDiscussion.value.number}/*`);
-    let nextComment = yield* commentSubscription.next();
-
-    const comments = [];
-
-    while (!nextComment.done) {
-      const replySubscription = yield* cache.find<Reply>(`discussions/${nextDiscussion.value.number}/*/*`);
-      let nextReply = yield* replySubscription.next();
-
-      const replies = [];
-
-      while (!nextReply.done) {
-        replies.push(nextReply.value);
-        nextReply = yield* replySubscription.next();
+    const item = nextDiscussion.value;
+    switch(item.type) {
+      case "discussion": {
+        if (current && current !== item.number) {
+          result = {
+            ...discussion,
+            comments,
+          } // 🚨 send as result
+          comments = [];
+        }
+        discussion = item;
+        current = item.number;
+        break;
       }
-
-      comments.push({
-        ...nextComment.value,
-        replies,
-      });
-      nextComment = yield* commentSubscription.next();
+      case "comment": {
+        comments.push(item);
+        break;
+      }
+      case "reply": {
+        const comment = comments.find(comment => {
+          return comment.id === item.parentCommentId;
+        });
+        if (comment && comment.replies) {
+          comment.replies.push(item);
+        } else if (comment) {
+          comment.replies = [item];
+        } else {
+          logger.error("This could happen if parent comment author account is deleted.");
+        }
+        break;
+      }
     }
-    
-    const discussion = {
-      ...nextDiscussion.value,
-      comments,
-    };  // 🚨
-    
+
     nextDiscussion = yield* discussionSubscription.next();
   }
+
+  console.log(result); // 🚨 for the last discussion
 }
