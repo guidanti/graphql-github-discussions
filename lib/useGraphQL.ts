@@ -17,6 +17,7 @@ import { useRetryWithBackoff } from './useRetryWithBackoff.ts';
 import { assert } from "jsr:@std/assert@1.0.3";
 import { initCacheContext, useCache } from "./useCache.ts";
 import { useLogger } from "./useLogger.ts";
+import { useCost } from "./useCost.ts";
 
 type GraphQLQueryFunction = <ResponseData>(
   query: string,
@@ -28,6 +29,7 @@ export const GraphQLContext = createContext<GraphQLQueryFunction>("graphql");
 export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
   const token = Deno.env.get("GITHUB_TOKEN");
   const logger = yield* useLogger();
+  const cost = yield* useCost();
 
   assert(
     token,
@@ -82,6 +84,14 @@ export function* initGraphQLContext(): Operation<GraphQLQueryFunction> {
                 // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.
                 chalk.green("remaining", data.rateLimit.remaining)}`,
             );
+            cost.update({
+              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
+              cost: data.rateLimit.cost,
+              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
+              nodeCount: data.rateLimit.nodeCount,
+              // @ts-expect-error Property 'rateLimit' does not exist on type 'NonNullable<ResponseData>'.deno-ts(2339)
+              remaining: data.rateLimit.remaining,
+            });
           }
 
           assert(data, "Could not fetch data from GraphQL API")

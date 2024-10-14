@@ -11,11 +11,13 @@ import { md5 } from "jsr:@takker/md5@0.1.0";
 import { encodeHex } from "jsr:@std/encoding@1";
 import { initRetryWithBackoff } from "./lib/useRetryWithBackoff.ts";
 import { stitch } from "./lib/stitch.ts";
+import { initCostContext } from "./lib/useCost.ts";
 
 await main(function* () {
   yield* initRetryWithBackoff();
 
   const logger = yield* initLoggerContext(console);
+  const cost = yield* initCostContext();
   const cache = yield* initCacheContext({
     location: new URL(`./.cache/`, import.meta.url),
   });
@@ -70,22 +72,26 @@ await main(function* () {
     }
   });
 
-  const incompleteComments: Cursor[] = yield* fetchDiscussions({
-    org: "vercel",
-    repo: "next.js",
-    first: 75,
-  });
+  try {
+    const incompleteComments: Cursor[] = yield* fetchDiscussions({
+      org: "vercel",
+      repo: "next.js",
+      first: 75,
+    });
+  
+    yield* fetchComments({ 
+      incompleteComments,
+      first: 100, 
+    });
+  
+    yield* fetchReplies({
+      first: 100
+    });
 
-  yield* fetchComments({ 
-    incompleteComments,
-    first: 100, 
-  });
-
-  yield* fetchReplies({
-    first: 100
-  });
-
-  yield* stitch();
-
-  logger.log("Done ✅");
+    yield* stitch();
+    
+    logger.log("Done ✅");
+  } finally {
+    logger.dir(cost.summary());
+  }
 });
