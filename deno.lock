@@ -38,7 +38,8 @@
       "jsr:@ts-morph/bootstrap@^0.24.0": "jsr:@ts-morph/bootstrap@0.24.0",
       "jsr:@ts-morph/common@^0.24.0": "jsr:@ts-morph/common@0.24.0",
       "jsr:@udibo/http-error@0.8.2": "jsr:@udibo/http-error@0.8.2",
-      "npm:@apollo/client": "npm:@apollo/client@3.11.8_graphql@16.9.0",
+      "npm:@apollo/client": "npm:@apollo/client@3.11.8_graphql@16.8.2",
+      "npm:@apollo/client@3.11.8": "npm:@apollo/client@3.11.8_graphql@16.8.2",
       "npm:@changesets/cli@^2.27.9": "npm:@changesets/cli@2.27.9",
       "npm:@graphql-codegen/cli@^4.0.0": "npm:@graphql-codegen/cli@4.0.1_graphql@16.8.2_typescript@5.6.3_@types+node@22.7.5",
       "npm:@graphql-codegen/near-operation-file-preset@^2.4.1": "npm:@graphql-codegen/near-operation-file-preset@2.5.0_graphql@16.8.2",
@@ -212,6 +213,26 @@
         "dependencies": {
           "@jridgewell/gen-mapping": "@jridgewell/gen-mapping@0.3.5",
           "@jridgewell/trace-mapping": "@jridgewell/trace-mapping@0.3.25"
+        }
+      },
+      "@apollo/client@3.11.8_graphql@16.8.2": {
+        "integrity": "sha512-CgG1wbtMjsV2pRGe/eYITmV5B8lXUCYljB2gB/6jWTFQcrvirUVvKg7qtFdjYkQSFbIffU1IDyxgeaN81eTjbA==",
+        "dependencies": {
+          "@graphql-typed-document-node/core": "@graphql-typed-document-node/core@3.2.0_graphql@16.8.2",
+          "@wry/caches": "@wry/caches@1.0.1",
+          "@wry/equality": "@wry/equality@0.5.7",
+          "@wry/trie": "@wry/trie@0.5.0",
+          "graphql": "graphql@16.8.2",
+          "graphql-tag": "graphql-tag@2.12.6_graphql@16.8.2",
+          "hoist-non-react-statics": "hoist-non-react-statics@3.3.2",
+          "optimism": "optimism@0.18.0",
+          "prop-types": "prop-types@15.8.1",
+          "rehackt": "rehackt@0.1.0",
+          "response-iterator": "response-iterator@0.2.6",
+          "symbol-observable": "symbol-observable@4.0.0",
+          "ts-invariant": "ts-invariant@0.10.3",
+          "tslib": "tslib@2.7.0",
+          "zen-observable-ts": "zen-observable-ts@1.2.5"
         }
       },
       "@apollo/client@3.11.8_graphql@16.9.0": {

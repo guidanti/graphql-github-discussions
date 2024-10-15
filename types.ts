@@ -43,6 +43,14 @@ export interface Cursor {
  */
 export type CURSOR_VALUE = string | null | undefined;
 
+export interface CommentWithReplies extends Comment {
+  replies: Reply[];
+}
+
+export interface GithubDiscussionFetcherResult extends Discussion {
+  comments: CommentWithReplies[];
+}
+
 export type DiscussionEntries =
   | Comment
   | Discussion
