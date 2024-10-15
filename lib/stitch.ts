@@ -1,22 +1,19 @@
-import { createQueue, spawn } from "npm:effection@3.0.3";
-import { Comment, Discussion, DiscussionEntries, Reply } from "../types.ts";
+import {
+  createQueue,
+  type Operation,
+  type Queue,
+  spawn,
+} from "npm:effection@3.0.3";
+import { DiscussionEntries, GithubDiscussionFetcherResult } from "../types.ts";
 import { useCache } from "./useCache.ts";
-import { useEntries } from "./useEntries.ts";
 import { useLogger } from "./useLogger.ts";
-import { assert } from "jsr:@std/assert/assert";
 
-interface CommentWithReplies extends Comment {
-  replies: Reply[];
-}
-
-interface DiscussionResult extends Discussion {
-  comments: CommentWithReplies[];
-}
-
-export function* stitch() {
+export function* stitch(): Operation<
+  Queue<GithubDiscussionFetcherResult, void>
+> {
   const cache = yield* useCache();
   const logger = yield* useLogger();
-  const queue = createQueue<DiscussionResult, void>();
+  const queue = createQueue<GithubDiscussionFetcherResult, void>();
 
   const discussionSubscription = yield* cache.find<DiscussionEntries>(
     "discussions/*",
@@ -24,7 +21,7 @@ export function* stitch() {
   let nextDiscussion = yield* discussionSubscription.next();
 
   yield* spawn(function* () {
-    let result: DiscussionResult | undefined;
+    let result: GithubDiscussionFetcherResult | undefined;
 
     while (!nextDiscussion.done) {
       const item = nextDiscussion.value;
@@ -49,7 +46,9 @@ export function* stitch() {
               replies: [],
             });
           } else {
-            logger.error(`Do not have a reference to the discussion for comment[${item.id}]`);
+            logger.error(
+              `Do not have a reference to the discussion for comment[${item.id}]`,
+            );
           }
           break;
         }
@@ -66,7 +65,9 @@ export function* stitch() {
               );
             }
           } else {
-            logger.error(`Do not have a reference to the discussion for reply[${item.id}]`);
+            logger.error(
+              `Do not have a reference to the discussion for reply[${item.id}]`,
+            );
           }
           break;
         }
@@ -78,7 +79,7 @@ export function* stitch() {
     if (result) {
       queue.add(result);
     } else {
-      logger.error(`Was expecting the last discussion result in the stitcher`)
+      logger.error(`Was expecting the last discussion result in the stitcher`);
     }
 
     queue.close();
