@@ -31,12 +31,11 @@ export function* stitch(): Operation<
             // encountered next discussion
             // emit the discussion before i
             queue.add(result);
-          } else {
-            result = {
-              ...item,
-              comments: [],
-            };
           }
+          result = {
+            ...item,
+            comments: [],
+          };
           break;
         }
         case "comment": {
