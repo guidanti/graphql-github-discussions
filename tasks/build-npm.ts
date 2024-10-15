@@ -5,7 +5,10 @@ const outDir = "./build/npm";
 await emptyDir(outDir);
 
 await build({
-  entryPoints: ["./main.ts"],
+  entryPoints: [
+    "./fetchGithubDiscussions.ts",
+    "./lib/retryBackoff.ts"
+  ],
   outDir,
   shims: {
     deno: false,

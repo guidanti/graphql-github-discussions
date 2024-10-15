@@ -5,13 +5,12 @@ import {
   type Operation,
   useAbortSignal,
 } from "npm:effection@3.0.3";
-import { RequestParameters } from "npm:@octokit/types@13.6.1";
+import type { RequestParameters } from "npm:@octokit/types@13.6.1";
 import { md5 } from "jsr:@takker/md5@0.1.0";
 import { encodeHex } from "jsr:@std/encoding@1";
 import chalk from "npm:chalk@5.3.0";
-import { getOperationName } from "npm:@apollo/client/utilities/index.js";
-import { parse } from "npm:graphql@16.8.2";
-import { type GraphQlQueryResponse } from "npm:@octokit/graphql@^4.8.0/dist-types/types.ts";
+import { DocumentNode, parse, type OperationDefinitionNode } from "npm:graphql@16.8.2";
+import type { GraphQlQueryResponse } from "npm:@octokit/graphql@^4.8.0/dist-types/types.ts";
 import { useRetryWithBackoff } from './useRetryWithBackoff.ts';
 
 import { assert } from "jsr:@std/assert@1.0.3";
@@ -150,3 +149,18 @@ function* fetchGitHubGraphQL<ResponseData>(
     throw new Error(`${response.status} ${response.statusText}`)
   }
 }
+
+export function getOperationName(doc: DocumentNode): string | null {
+  return (
+    doc.definitions
+      .filter(
+        (definition): definition is OperationDefinitionWithName =>
+          definition.kind === "OperationDefinition" && !!definition.name
+      )
+      .map((x) => x.name.value)[0] || null
+  );
+}
+
+type OperationDefinitionWithName = OperationDefinitionNode & {
+  name: NonNullable<OperationDefinitionNode["name"]>;
+};
