@@ -5,20 +5,16 @@ const outDir = "./build/npm";
 await emptyDir(outDir);
 
 await build({
-  entryPoints: [
-    "./fetchGithubDiscussions.ts",
-    "./lib/retryBackoff.ts"
-  ],
+  entryPoints: ["mod.ts"],
   outDir,
   shims: {
     deno: false,
   },
   test: false,
   typeCheck: false,
-  scriptModule: false,
   compilerOptions: {
-    lib: ["ESNext", "DOM"],
-    target: "ES2020",
+    lib: ["DOM", "DOM.Iterable", "ScriptHost", "ES2022"],
+    target: "ES2022",
     sourceMap: true,
   },
   package: {
@@ -29,7 +25,7 @@ await build({
     repository: pkgJson.repository,
     bugs: pkgJson.bugs,
     engines: {
-      node: ">= 16",
+      node: "18 || 20",
     },
     type: "module",
     sideEffects: false,
