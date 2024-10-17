@@ -42,6 +42,10 @@ export function* useCache(): Operation<Cache> {
   return yield* CacheContext;
 }
 
+export function createPersistentCache(options: InitCacheContextOptions): Cache {
+  return new PersistantCache(options.location)
+}
+
 class PersistantCache implements Cache {
   constructor(public location: URL) {}
 

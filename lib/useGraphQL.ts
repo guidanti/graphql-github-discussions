@@ -19,7 +19,7 @@ import {
 import { useRetryWithBackoff } from "./useRetryWithBackoff.ts";
 
 import { ensureContext } from "./ensureContext.ts";
-import { type Cache, initCacheContext, useCache } from "./useCache.ts";
+import { type Cache, CacheContext, createPersistentCache, useCache } from "./useCache.ts";
 import { type CostTracker, useCost } from "./useCost.ts";
 import { Logger, useLogger } from "./useLogger.ts";
 
@@ -45,10 +45,10 @@ export function* initGraphQLContext(
     call(function* () {
       const currentCache = yield* useCache();
 
-      const cache = yield* initCacheContext({
+      const cache = yield* CacheContext.set(createPersistentCache({
         location: new URL("./github/", currentCache.location),
-      });
-
+      }));
+      
       return createFetchGithubGraphql({
         cache,
         client,
@@ -147,6 +147,7 @@ export function createGithubGraphqlClient(
   ): Operation<ResponseData> {
     const logger = yield* useLogger();
     const signal = yield* useAbortSignal();
+
     const response = yield* call(() =>
       fetch(endpoint, {
         method: "POST",
