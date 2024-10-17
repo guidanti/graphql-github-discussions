@@ -13,7 +13,7 @@ import { basename, dirname, globToRegExp, join } from "jsr:@std/path@1.0.6";
 
 import { JSONLinesParseStream } from './jsonlines/parser.ts';
 
-interface Cache {
+export interface Cache {
   location: URL;
   write(key: string, data: unknown): Operation<void>;
   read<T>(key: string): Operation<Stream<T, unknown>>;

@@ -17,7 +17,7 @@ export const CostContext = createContext<Cost>(
   "cost",
 );
 
-interface CostTracker {
+export interface CostTracker {
   total: CostEntries;
   queryCount: number;
   update(entry: CostEntries): void;

@@ -3,6 +3,8 @@ import {
   Operation,
 } from "npm:effection@3.0.3";
 
+export type Logger = typeof console;
+
 export const LoggerContext = createContext<Console>(
   "logger",
 );

@@ -1,7 +1,7 @@
 import { each, type Operation, type Queue, spawn } from "npm:effection@3.0.3";
 import { fetchDiscussions } from "./fetchers/discussion.ts";
 import { initCacheContext } from "./lib/useCache.ts";
-import { initGraphQLContext } from "./lib/useGraphQL.ts";
+import { GithubGraphqlClient, initGraphQLContext } from "./lib/useGraphQL.ts";
 import { fetchComments } from "./fetchers/comments.ts";
 import { fetchReplies } from "./fetchers/replies.ts";
 import { initEntriesContext } from "./lib/useEntries.ts";
@@ -13,7 +13,11 @@ import { initRetryWithBackoff } from "./lib/useRetryWithBackoff.ts";
 import { stitch } from "./lib/stitch.ts";
 import { initCostContext } from "./lib/useCost.ts";
 
-export function* fetchGithubDiscussions(): Operation<
+export interface FetchGithubDiscussionsOptions {
+  client: GithubGraphqlClient
+}
+
+export function* fetchGithubDiscussions({ client }: FetchGithubDiscussionsOptions): Operation<
   Queue<GithubDiscussionFetcherResult, void>
 > {
   yield* initRetryWithBackoff();
@@ -24,7 +28,7 @@ export function* fetchGithubDiscussions(): Operation<
     location: new URL(`./.cache/`, import.meta.url),
   });
 
-  yield* initGraphQLContext();
+  yield* initGraphQLContext({ client });
 
   const entries = yield* initEntriesContext();
 

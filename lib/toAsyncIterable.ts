@@ -1,11 +1,9 @@
-import type { Scope, Stream } from "npm:effection@3.0.3";
+import type { Scope, Queue } from "npm:effection@3.0.3";
 
-export function toAsyncIterable<T>(stream: Stream<T, unknown>, scope: Scope): AsyncIterable<T> {
+export function toAsyncIterable<T>(queue: Queue<T, unknown>, scope: Scope): AsyncIterable<T> {
   return {
     async *[Symbol.asyncIterator]() {
-      const subscription = await scope.run(() => stream);
-
-      let next = await scope.run(subscription.next);
+      let next = await scope.run(queue.next);
 
       while (true) {
         if (!next.done) {
@@ -13,7 +11,7 @@ export function toAsyncIterable<T>(stream: Stream<T, unknown>, scope: Scope): As
         } else {
           break;
         }
-        next = await scope.run(subscription.next);
+        next = await scope.run(queue.next);
       }
       return next.value;
     }
