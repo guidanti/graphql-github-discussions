@@ -1,27 +1,27 @@
+import { assert } from "jsr:@std/assert@1.0.3";
+import { encodeHex } from "jsr:@std/encoding@1";
+import { md5 } from "jsr:@takker/md5@0.1.0";
+import type { GraphQlQueryResponse } from "npm:@octokit/graphql@^4.8.0/dist-types/types.ts";
+import type { RequestParameters } from "npm:@octokit/types@13.6.1";
+import chalk from "npm:chalk@5.3.0";
 import {
   call,
-  type Context as ContextType,
   createContext,
   each,
   type Operation,
   useAbortSignal,
 } from "npm:effection@3.0.3";
-import type { RequestParameters } from "npm:@octokit/types@13.6.1";
-import { md5 } from "jsr:@takker/md5@0.1.0";
-import { encodeHex } from "jsr:@std/encoding@1";
-import chalk from "npm:chalk@5.3.0";
 import {
   DocumentNode,
   type OperationDefinitionNode,
   parse,
 } from "npm:graphql@16.8.2";
-import type { GraphQlQueryResponse } from "npm:@octokit/graphql@^4.8.0/dist-types/types.ts";
 import { useRetryWithBackoff } from "./useRetryWithBackoff.ts";
 
-import { assert } from "jsr:@std/assert@1.0.3";
+import { ensureContext } from "./ensureContext.ts";
 import { type Cache, initCacheContext, useCache } from "./useCache.ts";
-import { Logger, useLogger } from "./useLogger.ts";
 import { type CostTracker, useCost } from "./useCost.ts";
+import { Logger, useLogger } from "./useLogger.ts";
 
 type GraphQLQueryFunction = <ResponseData>(
   query: string,
@@ -29,24 +29,6 @@ type GraphQLQueryFunction = <ResponseData>(
 ) => Operation<ResponseData>;
 
 export const GraphQLContext = createContext<GraphQLQueryFunction>("graphql");
-
-function isMissingContextError(
-  error: unknown,
-): error is { name: "MissingContextError" } {
-  return error != null &&
-    (error as { name: string }).name === "MissingContextError";
-}
-
-export function* ensureContext<T>(Context: ContextType<T>, init: Operation<T>) {
-  try {
-    return yield* Context;
-  } catch (e) {
-    if (isMissingContextError(e)) {
-      return yield* Context.set(yield* init);
-    }
-    throw e;
-  }
-}
 
 interface InitGraphQLContextOptions {
   client: GithubGraphqlClient;

@@ -14,10 +14,15 @@ import { stitch } from "./lib/stitch.ts";
 import { initCostContext } from "./lib/useCost.ts";
 
 export interface FetchGithubDiscussionsOptions {
-  client: GithubGraphqlClient
+  client: GithubGraphqlClient;
+  org: string;
+  repo: string;
+  discussionsBatchSize: number;
+  commentsBatchSize: number;
+  repliesBatchSize: number;
 }
 
-export function* fetchGithubDiscussions({ client }: FetchGithubDiscussionsOptions): Operation<
+export function* fetchGithubDiscussions({ client, org, repo, discussionsBatchSize, commentsBatchSize, repliesBatchSize }: FetchGithubDiscussionsOptions): Operation<
   Queue<GithubDiscussionFetcherResult, void>
 > {
   yield* initRetryWithBackoff();
@@ -83,18 +88,18 @@ export function* fetchGithubDiscussions({ client }: FetchGithubDiscussionsOption
   });
 
   const incompleteComments: Cursor[] = yield* fetchDiscussions({
-    org: "vercel",
-    repo: "next.js",
-    first: 75,
+    org,
+    repo,
+    first: discussionsBatchSize,
   });
 
   yield* fetchComments({
     incompleteComments,
-    first: 100,
+    first: commentsBatchSize,
   });
 
   yield* fetchReplies({
-    first: 100,
+    first: repliesBatchSize,
   });
 
   logger.dir(cost.summary());

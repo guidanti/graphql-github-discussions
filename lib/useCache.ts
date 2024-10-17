@@ -1,3 +1,5 @@
+import { ensureFile, exists, walkSync } from "jsr:@std/fs@1.0.4";
+import { basename, dirname, globToRegExp, join } from "jsr:@std/path@1.0.6";
 import {
   call,
   createContext,
@@ -8,9 +10,8 @@ import {
   type Stream,
   stream,
 } from "npm:effection@3.0.3";
-import { ensureFile, exists, walkSync } from "jsr:@std/fs@1.0.4";
-import { basename, dirname, globToRegExp, join } from "jsr:@std/path@1.0.6";
 
+import { ensureContext } from "./ensureContext.ts";
 import { JSONLinesParseStream } from './jsonlines/parser.ts';
 
 export interface Cache {
@@ -28,7 +29,13 @@ interface InitCacheContextOptions {
 }
 
 export function* initCacheContext(options: InitCacheContextOptions) {
-  return yield* CacheContext.set(new PersistantCache(options.location));
+
+  // deno-lint-ignore require-yield
+  function* init() {
+    return new PersistantCache(options.location);
+  }
+  
+  return yield* ensureContext(CacheContext, init());
 }
 
 export function* useCache(): Operation<Cache> {

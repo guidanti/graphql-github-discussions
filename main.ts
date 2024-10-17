@@ -1,8 +1,8 @@
+import { assert } from "jsr:@std/assert";
 import { main } from "npm:effection@3.0.3";
 import { fetchGithubDiscussions } from "./fetchGithubDiscussions.ts";
 import { forEach } from "./lib/forEach.ts";
 import { createGithubGraphqlClient } from "./lib/useGraphQL.ts";
-import { assert } from "jsr:@std/assert";
 
 if (import.meta.main) {
   await main(function* () {
@@ -12,16 +12,23 @@ if (import.meta.main) {
       token,
       "You need to have GITHUB_TOKEN configured in our local environment",
     );
-    
+
     const client = createGithubGraphqlClient({
       endpoint: "https://api.github.com/graphql",
       token,
     });
 
-    const results = yield* fetchGithubDiscussions({ client });
+    const results = yield* fetchGithubDiscussions({
+      client,
+      org: "vercel",
+      repo: "next.js",
+      discussionsBatchSize: 75,
+      commentsBatchSize: 100,
+      repliesBatchSize: 100,
+    });
 
     yield* forEach(function* (result) {
-      console.log(result)
+      console.log(result);
     }, results);
 
     console.log("Done ✅");
