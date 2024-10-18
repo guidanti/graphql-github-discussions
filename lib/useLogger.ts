@@ -1,14 +1,23 @@
-import {
-  createContext,
-  Operation,
-} from "npm:effection@3.0.3";
+import { createContext, Operation } from "npm:effection@3.0.3";
+import { ensureContext } from "./ensureContext.ts";
+
+export type Logger = typeof console;
 
 export const LoggerContext = createContext<Console>(
   "logger",
 );
 
 export function* initLoggerContext(logger: Console): Operation<Console> {
-  return yield* LoggerContext.set(logger);
+
+  // deno-lint-ignore require-yield
+  function* init(): Operation<Logger> {
+    return logger;
+  }
+  
+  return yield* ensureContext(
+    LoggerContext,
+    init(),
+  );
 }
 
 export function* useLogger(): Operation<Console> {

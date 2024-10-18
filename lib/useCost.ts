@@ -2,6 +2,7 @@ import {
   createContext,
   Operation,
 } from "npm:effection@3.0.3";
+import { ensureContext } from "./ensureContext.ts";
 
 interface CostEntries {
   cost: number;
@@ -17,7 +18,7 @@ export const CostContext = createContext<Cost>(
   "cost",
 );
 
-interface CostTracker {
+export interface CostTracker {
   total: CostEntries;
   queryCount: number;
   update(entry: CostEntries): void;
@@ -51,7 +52,12 @@ class Cost implements CostTracker {
 }
 
 export function* initCostContext() {
-  return yield* CostContext.set(new Cost());
+  // deno-lint-ignore require-yield
+  function* init() {
+    return new Cost();
+  }
+
+  return yield* ensureContext(CostContext, init())
 }
 
 export function* useCost(): Operation<Cost> {

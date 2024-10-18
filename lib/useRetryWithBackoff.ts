@@ -1,5 +1,6 @@
 import { createContext, Operation, race, sleep } from "npm:effection@3.0.3";
 import { useLogger } from "./useLogger.ts";
+import { ensureContext } from "./ensureContext.ts";
 
 interface UseRetryBackoffOptions {
   timeout?: number;
@@ -75,5 +76,13 @@ export function* useRetryWithBackoff<T>(
 export function* initRetryWithBackoff(
   defaults: RetryWithContextDefaults = DEFAULTS,
 ) {
-  return yield* RetryWithBackoffContext.set(defaults);
+  // deno-lint-ignore require-yield
+  function* init(): Operation<RetryWithContextDefaults> {
+    return defaults;
+  }
+
+  return yield* ensureContext(
+    RetryWithBackoffContext,
+    init(),
+  );
 }
