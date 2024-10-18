@@ -1,0 +1,720 @@
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-l3",
+  "number": 46,
+  "title": "Custom Theme for the Dashboard",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/46",
+  "bodyText": "(Demo Post) I designed a custom theme for our project’s dashboard. Take a look and let me know what you think! View the theme. (Demo content for example purposes)",
+  "author": "taras",
+  "category": "Show and tell",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-l",
+      "bodyText": "(Demo Comment) The theme looks fantastic! I love how clean and modern it is. Is there a way to switch back and forth between themes easily? (Generated comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 46,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lS",
+  "number": 27,
+  "title": "How do you manage technical debt?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/27",
+  "bodyText": "(Demo Post) How does everyone manage technical debt in their projects? Do you have strategies for balancing new features and refactoring old code? (Sample post for illustrative purposes)",
+  "author": "taras",
+  "category": "General",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap39-",
+      "bodyText": "(Demo Comment) We usually prioritize it alongside new features—especially when old code starts slowing down development. But it’s always a tough balance! Curious to hear others’ thoughts. (Generated comment for demonstration)",
+      "author": "taras",
+      "discussionNumber": 27,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lD",
+  "number": 18,
+  "title": "[Announcement] Major Update: v2.0 Released!",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/18",
+  "bodyText": "(Demo Post) We’re excited to announce the release of version 2.0 of our project! This update includes a variety of new features, performance enhancements, and bug fixes. Check out the release notes for more details. (This is a sample announcement for demonstration purposes)",
+  "author": "taras",
+  "category": "Announcements",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap39u",
+      "bodyText": "(Demo Comment) Great work on this release! I’ve already updated and noticed a significant performance boost. Looking forward to testing out the new features! (This is a demo comment for illustration purposes)",
+      "author": "taras",
+      "discussionNumber": 18,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lP",
+  "number": 25,
+  "title": "Community Guidelines for Code Reviews",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/25",
+  "bodyText": "(Demo Post) I think we should establish some community guidelines for code reviews. What are everyone’s thoughts on this? Let’s discuss what should be included. (Demo content, not a real discussion)",
+  "author": "taras",
+  "category": "General",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap396",
+      "bodyText": "(Demo Comment) I agree! Having consistent guidelines will make code reviews much smoother. Maybe we can include some tips on how to give constructive feedback too? (Generated comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 25,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-l1",
+  "number": 44,
+  "title": "My First Open-source Contribution!",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/44",
+  "bodyText": "(Demo Post) I just made my first contribution to an open-source project and wanted to share it with the community. Check out the pull request here: [link-to-PR]. (This post is a demo for illustration purposes)",
+  "author": "taras",
+  "category": "Show and tell",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-h",
+      "bodyText": "(Demo Comment) Congratulations on your first contribution! It’s always exciting to see new people getting involved. Keep up the good work! (Generated comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 44,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lu",
+  "number": 40,
+  "title": "What’s the best way to contribute to this repository?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/40",
+  "bodyText": "(Demo Post) I’m interested in contributing, but I’m not sure where to start. What’s the best way to contribute to this project? (Demo content for example purposes)",
+  "author": "taras",
+  "category": "Q&A",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-Z",
+      "bodyText": "(Demo Comment) Start by looking at the open issues labeled as “good first issue.” Also, be sure to read the contributing guidelines for our preferred workflow. Feel free to reach out if you need help! (Sample comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 40,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-ls",
+  "number": 38,
+  "title": "How Do You Like to Learn New Technologies?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/38",
+  "bodyText": "(Demo Post) What’s your preferred method for learning new technologies? (Generated content for demo purposes)",
+  "author": "taras",
+  "category": "Polls",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-W",
+      "bodyText": "(Demo Comment) I voted for real-time collaboration! I think that feature would really improve teamwork, especially for distributed teams like ours. (This is a demo comment for illustrative purposes)",
+      "author": "taras",
+      "discussionNumber": 38,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lH",
+  "number": 21,
+  "title": "[New Feature] Introducing API Integration!",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/21",
+  "bodyText": "(Demo Post) We’re thrilled to announce the integration of our platform with a new API! This allows developers to automate workflows and access our data programmatically. Read the documentation here. (Generated content for a demo)",
+  "author": "taras",
+  "category": "Announcements",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap39z",
+      "bodyText": "(Demo Comment) The API integration is a game-changer! I’ve been waiting for this. Can’t wait to start automating some of my workflows. Thanks! (Sample comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 21,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lK",
+  "number": 23,
+  "title": "What’s everyone working on this week?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/23",
+  "bodyText": "(Demo Post) Let’s share our weekly goals and progress! What are you focusing on this week, and how can the community help? (Sample post for demonstration purposes)",
+  "author": "taras",
+  "category": "General",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap393",
+      "bodyText": "(Demo Comment) I’m currently tackling a feature request that adds OAuth support to our project. Could use some feedback on the implementation when I finish up later this week. (Generated comment for illustration purposes)",
+      "author": "taras",
+      "discussionNumber": 23,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lx",
+  "number": 42,
+  "title": "How can I set up the project in a local environment?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/42",
+  "bodyText": "(Demo Post) I’m trying to set up the project locally but running into some issues. Could someone walk me through the process? (Sample post for demo purposes)",
+  "author": "taras",
+  "category": "Q&A",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-e",
+      "bodyText": "(Demo Comment) After cloning the repository, run npm install to install the dependencies. Then, you can start the project using npm start. If you run into any issues, check the README for setup instructions. (Sample comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 42,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lL",
+  "number": 24,
+  "title": "Best practices for contributing to open-source projects?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/24",
+  "bodyText": "(Demo Post) I’m new to contributing to open-source projects. What are some best practices for getting started and making meaningful contributions? (This post is generated for a demo)",
+  "author": "taras",
+  "category": "General",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap394",
+      "bodyText": "(Demo Comment) A good place to start is by checking out the issues labeled “good first issue” in repositories. Also, reading through the contributing guidelines for each project helps a lot! (This is a demo comment for example purposes)",
+      "author": "taras",
+      "discussionNumber": 24,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lF",
+  "number": 19,
+  "title": "[Security Alert] Critical Vulnerability Patch",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/19",
+  "bodyText": "(Demo Post) A critical security vulnerability has been identified in v1.5.3. Please update to v1.5.4 as soon as possible to ensure your systems remain secure. Learn more about the fix. (This post is generated as a demo)",
+  "author": "taras",
+  "category": "Announcements",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap39w",
+      "bodyText": "(Demo Comment) Thanks for the heads-up! I’ll make sure to update immediately. Could you provide more details about what this vulnerability impacted? (Sample comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 19,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-l2",
+  "number": 45,
+  "title": "New CLI Tool for Automating Workflows",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/45",
+  "bodyText": "Demo Post) I’ve built a CLI tool that automates several workflows in our project. It’s still in early stages, but I’d love feedback. Check it out here! (Sample content for demonstration)",
+  "author": "taras",
+  "category": "Show and tell",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-i",
+      "bodyText": "(Demo Comment) This looks really useful! I’m always looking for ways to automate repetitive tasks. I’ll give it a try and leave some feedback. (This is a sample comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 45,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-l4",
+  "number": 47,
+  "title": "Refactoring Legacy Code with Tests",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/47",
+  "bodyText": "(Demo Post) I recently refactored some legacy code and added unit tests for it. I thought I’d share my approach and get your feedback. Here’s the code. (Generated post for demo)",
+  "author": "taras",
+  "category": "Show and tell",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-n",
+      "bodyText": "(Demo Comment) Great approach! Writing tests before refactoring is such a good practice—I need to do that more often. Do you have any tips on how to deal with dependencies in legacy code? (Sample comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 47,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lR",
+  "number": 26,
+  "title": "Favorite developer tools?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/26",
+  "bodyText": "(Demo Post) What’s your favorite tool or extension that makes your development process smoother? Share your recommendations! (Generated post for demonstration)",
+  "author": "taras",
+  "category": "General",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap397",
+      "bodyText": "(Demo Comment) I can’t live without Visual Studio Code and the GitLens extension. It makes navigating through version history so much easier! (Demo comment for illustration purposes)",
+      "author": "taras",
+      "discussionNumber": 26,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lJ",
+  "number": 22,
+  "title": "[Announcement] Community Contribution Guidelines Update",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/22",
+  "bodyText": "(Demo Post) We’ve updated our community contribution guidelines to reflect changes in our development process. Please take a moment to review the new guidelines here. (This is sample content for demonstration purposes)",
+  "author": "taras",
+  "category": "Announcements",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap391",
+      "bodyText": "(Demo Comment) The new guidelines are much clearer—thanks for updating them! I think this will make it easier for newcomers to contribute. (This is a sample comment created for demonstration purposes)",
+      "author": "taras",
+      "discussionNumber": 22,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-ly",
+  "number": 43,
+  "title": "How do you debug performance issues in large projects?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/43",
+  "bodyText": "(Demo Post) I’m dealing with performance issues in a large project and would love to hear some tips on how to effectively debug them. (Generated post for demo)",
+  "author": "taras",
+  "category": "Q&A",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-f",
+      "bodyText": "(Demo Comment) I recommend using a profiler like Chrome DevTools to identify performance bottlenecks. Also, keep an eye on memory leaks and inefficient algorithms—they can really slow things down. (Generated comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 43,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lt",
+  "number": 39,
+  "title": "How do I install the latest version of the project?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/39",
+  "bodyText": "(Demo Post) I’m having trouble installing the latest version of the project. Can anyone guide me through the steps? (This is a sample question created for demonstration purposes)",
+  "author": "taras",
+  "category": "Q&A",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-X",
+      "bodyText": "(Demo Comment) You can install the latest version by running npm install [project-name]@latest. Make sure to check the release notes for any breaking changes before upgrading. (This is a demo comment for example purposes)",
+      "author": "taras",
+      "discussionNumber": 39,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lw",
+  "number": 41,
+  "title": "How do you handle authentication in your apps?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/41",
+  "bodyText": "(Demo Post) I’m working on an app and need advice on the best practices for handling authentication. Any suggestions? (Generated for demonstration purposes)",
+  "author": "taras",
+  "category": "Q&A",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-b",
+      "bodyText": "(Demo Comment) I usually go with JWT (JSON Web Tokens) for authentication. It’s lightweight and works well with APIs. You might also want to look into OAuth if you’re dealing with third-party authentication. (This is a demo comment for illustrative purposes)",
+      "author": "taras",
+      "discussionNumber": 41,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lG",
+  "number": 20,
+  "title": "[Maintenance] Scheduled Downtime for Backend Migration",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/20",
+  "bodyText": "(Demo Post) We’ll be migrating our backend services to a new infrastructure on Friday, October 25, from 12:00 AM to 4:00 AM UTC. During this time, some services may be unavailable. We apologize for any inconvenience. (This is a mock post created for example purposes)",
+  "author": "taras",
+  "category": "Announcements",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap39y",
+      "bodyText": "(Demo Comment) Thanks for the update! Is there any chance this downtime could be extended, or is the migration expected to be completed within the scheduled window? (Generated comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 20,
+      "replies": [
+        {
+          "type": "reply",
+          "id": "DC_kwDOM7MWOc4Ap3--",
+          "bodyText": "(Demo Reply) We’re aiming to complete the migration within the scheduled window, but we’ll keep everyone updated if there are any delays. Thanks for your understanding! (This is a demo reply for example purposes)",
+          "author": "taras",
+          "parentCommentId": "DC_kwDOM7MWOc4Ap39y",
+          "discussionNumber": 20
+        }
+      ]
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lj",
+  "number": 35,
+  "title": "Preferred Communication Platform?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/35",
+  "bodyText": "(Demo Post) (This is a demo post for illustrative purposes)",
+  "author": "taras",
+  "category": "Polls",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-S",
+      "bodyText": "(Demo Comment) Discord has been working well for us—it’s fast and great for real-time collaboration. I’m curious what others prefer though. (Generated comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 35,
+      "replies": [
+        {
+          "type": "reply",
+          "id": "DC_kwDOM7MWOc4Ap3__",
+          "bodyText": "(Demo Reply) Discord seems to be a popular choice! We’ve been using it as well, but it’ll be interesting to see if others have had success with different platforms. Thanks for chiming in! (Generated reply for demo purposes)",
+          "author": "taras",
+          "parentCommentId": "DC_kwDOM7MWOc4Ap3-S",
+          "discussionNumber": 35
+        }
+      ]
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lC",
+  "number": 17,
+  "title": "Welcome to github-discussions-fetcher Discussions!",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/17",
+  "bodyText": "👋 Welcome!\nWe’re using Discussions as a place to connect with other members of our community. We hope that you:\n\nAsk questions you’re wondering about.\nShare ideas.\nEngage with other community members.\nWelcome others and are open-minded. Remember that this is a community we\nbuild together 💪.\n\nTo get started, comment below with an introduction of yourself and tell us about what you do with this community.",
+  "author": "taras",
+  "category": "Announcements",
+  "labels": [],
+  "comments": []
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-ld",
+  "number": 33,
+  "title": "Which Feature Should We Prioritize Next?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/33",
+  "bodyText": "(Demo Post) We have several new features in the pipeline, but we want to hear from you!  (This is a demo poll for demonstration purposes)",
+  "author": "taras",
+  "category": "Polls",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-M",
+      "bodyText": "(Demo Comment) I voted for real-time collaboration! I think that feature would really improve teamwork, especially for distributed teams like ours. (This is a demo comment for illustrative purposes)",
+      "author": "taras",
+      "discussionNumber": 33,
+      "replies": [
+        {
+          "type": "reply",
+          "id": "DC_kwDOM7MWOc4Ap3_5",
+          "bodyText": "(Demo Reply) Thanks for voting! Real-time collaboration seems to be a popular choice, and it would definitely make working together smoother. We’ll see what the rest of the community thinks! (This is a demo reply for example purposes)",
+          "author": "taras",
+          "parentCommentId": "DC_kwDOM7MWOc4Ap3-M",
+          "discussionNumber": 33
+        }
+      ]
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lZ",
+  "number": 31,
+  "title": "Improve Mobile Responsiveness of the Site",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/31",
+  "bodyText": "(Demo Post) The site works well on desktop, but I’ve noticed some issues on mobile. I suggest we focus on improving mobile responsiveness in the next update. (Demo content for example purposes)",
+  "author": "taras",
+  "category": "Ideas",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-H",
+      "bodyText": "(Demo Comment) Totally agree. I’ve noticed some elements get misaligned on mobile. I think this would be a good priority for the next sprint. (This comment is for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 31,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lT",
+  "number": 28,
+  "title": "Add Dark Mode to the Documentation",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/28",
+  "bodyText": "(Demo Post) I think it would be great to implement a dark mode option for our documentation. It would make reading at night easier for many users. Thoughts? (This is a generated post for demo purposes)",
+  "author": "taras",
+  "category": "Ideas",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-C",
+      "bodyText": "(Demo Comment) I love this idea! Dark mode would definitely improve readability, especially for those of us who work late hours. Any idea how hard it would be to implement? (Sample comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 28,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-ll",
+  "number": 36,
+  "title": "Frequency of Project Meetings?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/36",
+  "bodyText": "(Demo Post) (This is a sample post for demonstration purposes)",
+  "author": "taras",
+  "category": "Polls",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-T",
+      "bodyText": "(Demo Comment) JavaScript all the way! It’s so versatile, and with Node.js, you can use it for both front-end and back-end development. (Sample comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 36,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lh",
+  "number": 34,
+  "title": "Favorite Programming Language?",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/34",
+  "bodyText": "(Demo Post)  Let’s see what the community prefers! (This poll is created for demo purposes)",
+  "author": "taras",
+  "category": "Polls",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-P",
+      "bodyText": "(Demo Comment) JavaScript all the way! It’s so versatile, and with Node.js, you can use it for both front-end and back-end development. (Sample comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 34,
+      "replies": [
+        {
+          "type": "reply",
+          "id": "DC_kwDOM7MWOc4Ap3_6",
+          "bodyText": "(Demo Reply) JavaScript definitely has a lot of fans! It’s great for its flexibility across the stack. What’s your favorite framework to use with JavaScript? (Sample reply for demo purposes)",
+          "author": "taras",
+          "parentCommentId": "DC_kwDOM7MWOc4Ap3-P",
+          "discussionNumber": 34
+        }
+      ]
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lX",
+  "number": 30,
+  "title": "Gamify Contributions with Leaderboards",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/30",
+  "bodyText": "(Demo Post) What if we created a leaderboard to gamify contributions? It could encourage more active participation in the project. Thoughts? (Sample post for demonstration)",
+  "author": "taras",
+  "category": "Ideas",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3_V",
+      "bodyText": "This could be a fun way to encourage more contributions. Maybe we could tie it to badges or other recognition for contributors. I’d love to see this in action!",
+      "author": "taras",
+      "discussionNumber": 30,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-l5",
+  "number": 48,
+  "title": "Fun Side Project: Interactive Git Tutorial",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/48",
+  "bodyText": "(Demo Post) In my free time, I’ve been working on an interactive Git tutorial to help newcomers. It’s live now, so feel free to check it out and provide feedback: [link-to-tutorial]. (This is a demo post for example purposes)",
+  "author": "taras",
+  "category": "Show and tell",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-p",
+      "bodyText": "(Demo Comment) This is awesome! I know a few people who could really benefit from this. I’ll definitely be sharing it with them. Keep up the great work! (Generated comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 48,
+      "replies": []
+    },
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap4Ag",
+      "bodyText": "(Demo Comment) I just shared it with a friend who’s learning Git, and they found it really intuitive! One suggestion they had was to include more advanced topics like branching strategies or rebasing—any plans to add those?",
+      "author": "taras",
+      "discussionNumber": 48,
+      "replies": []
+    },
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap4Ai",
+      "bodyText": "(Demo Comment) Just tried it out myself, and I love how smooth the interface is! One small thing—maybe add a “cheat sheet” for the Git commands covered so people can easily reference it after the tutorial?",
+      "author": "taras",
+      "discussionNumber": 48,
+      "replies": []
+    },
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap4Ak",
+      "bodyText": "(Demo Comment) I agree with the cheat sheet idea! Also, maybe consider gamifying the learning process—like adding badges or levels for completing sections? That might keep users more engaged.",
+      "author": "taras",
+      "discussionNumber": 48,
+      "replies": []
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-lU",
+  "number": 29,
+  "title": "Support for Multi-language Localization",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/29",
+  "bodyText": "(Demo Post) I’d like to propose adding support for multi-language localization. This could help expand our user base globally. Would love to hear feedback on this idea! (Demo content)",
+  "author": "taras",
+  "category": "Ideas",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-F",
+      "bodyText": "(Demo Comment) Yes! This would really help broaden the user base. We could start by identifying the most requested languages. I’d be happy to help with Spanish translation. (Demo comment created for example purposes)",
+      "author": "taras",
+      "discussionNumber": 29,
+      "replies": [
+        {
+          "type": "reply",
+          "id": "DC_kwDOM7MWOc4Ap3_U",
+          "bodyText": "(Demo Reply) That’s amazing—thanks for offering to help! We’ll start by gathering input from the community to prioritize languages, and we’ll definitely reach out when we start working on Spanish localization! (This is a sample reply for demo purposes)",
+          "author": "taras",
+          "parentCommentId": "DC_kwDOM7MWOc4Ap3-F",
+          "discussionNumber": 29
+        }
+      ]
+    }
+  ]
+}
+{
+  "type": "discussion",
+  "id": "D_kwDOM7MWOc4Ab-la",
+  "number": 32,
+  "title": "Real-time Collaboration Mode",
+  "url": "https://github.com/guidanti/github-discussions-fetcher/discussions/32",
+  "bodyText": "(Demo Post) Wouldn’t it be cool if we had a real-time collaboration mode, similar to Google Docs, for our project files? It could improve teamwork. Just an idea! (Generated post for demo purposes)",
+  "author": "taras",
+  "category": "Ideas",
+  "labels": [],
+  "comments": [
+    {
+      "type": "comment",
+      "id": "DC_kwDOM7MWOc4Ap3-J",
+      "bodyText": "(Demo Comment) Real-time collaboration would be amazing, especially for larger teams! Do you think this would be difficult to implement without affecting performance? (Sample comment for demo purposes)",
+      "author": "taras",
+      "discussionNumber": 32,
+      "replies": [
+        {
+          "type": "reply",
+          "id": "DC_kwDOM7MWOc4Ap3_e",
+          "bodyText": "(Demo Reply) Performance is definitely a concern, but we think we can optimize it by using WebSockets to sync changes efficiently. It’ll take some work, but it’s on our radar! (This is a sample reply for demo purposes)",
+          "author": "taras",
+          "parentCommentId": "DC_kwDOM7MWOc4Ap3-J",
+          "discussionNumber": 32
+        }
+      ]
+    }
+  ]
+}
