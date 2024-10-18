@@ -1,5 +1,11 @@
 # github-discussions-fetcher
 
+## 0.2.0
+
+### Minor Changes
+
+- 48f98b0: Make fetch discussions context configurable
+
 ## 0.1.1
 
 ### Patch Changes
