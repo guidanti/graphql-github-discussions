@@ -1,12 +1,14 @@
 import { assert } from "jsr:@std/assert";
-import { main } from "npm:effection@3.0.3";
+import { createQueue, main, spawn } from "npm:effection@3.0.3";
 import { fetchGithubDiscussions } from "./fetchGithubDiscussions.ts";
 import { forEach } from "./lib/forEach.ts";
 import { createGithubGraphqlClient } from "./lib/useGraphQL.ts";
+import type { GithubDiscussionFetcherResult } from "./types.ts";
 
 if (import.meta.main) {
   await main(function* () {
     const token = Deno.env.get("GITHUB_TOKEN");
+    const results = createQueue<GithubDiscussionFetcherResult, void>();
 
     assert(
       token,
@@ -18,18 +20,23 @@ if (import.meta.main) {
       token,
     });
 
-    const results = yield* fetchGithubDiscussions({
+    yield* spawn(function* () {
+      yield* forEach(function* (result) {
+        console.log(result);
+      }, results);
+    });
+
+    yield* fetchGithubDiscussions({
       client,
       org: "vercel",
       repo: "next.js",
       discussionsBatchSize: 75,
       commentsBatchSize: 100,
       repliesBatchSize: 100,
+      results,
     });
 
-    yield* forEach(function* (result) {
-      console.log(result);
-    }, results);
+    results.close();
 
     console.log("Done ✅");
   });

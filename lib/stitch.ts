@@ -8,12 +8,13 @@ import { DiscussionEntries, GithubDiscussionFetcherResult } from "../types.ts";
 import { useCache } from "./useCache.ts";
 import { useLogger } from "./useLogger.ts";
 
-export function* stitch(): Operation<
-  Queue<GithubDiscussionFetcherResult, void>
+export function* stitch(
+  { results }: { results: Queue<GithubDiscussionFetcherResult, void> },
+): Operation<
+  void
 > {
   const cache = yield* useCache();
   const logger = yield* useLogger();
-  const queue = createQueue<GithubDiscussionFetcherResult, void>();
 
   const discussionSubscription = yield* cache.find<DiscussionEntries>(
     "discussions/*",
@@ -30,7 +31,7 @@ export function* stitch(): Operation<
           if (result && result.number !== item.number) {
             // encountered next discussion
             // emit the discussion before i
-            queue.add(result);
+            results.add(result);
           }
           result = {
             ...item,
@@ -76,13 +77,9 @@ export function* stitch(): Operation<
     }
 
     if (result) {
-      queue.add(result);
+      results.add(result);
     } else {
       logger.error(`Was expecting the last discussion result in the stitcher`);
     }
-
-    queue.close();
   });
-
-  return queue;
 }
